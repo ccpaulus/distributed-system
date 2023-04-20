@@ -1,0 +1,217 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jumpserver-redis
+  labels:
+    shardName: jumpserver-redis
+    tenantid: platform
+    appid: JUMPSERVER
+    envtype: PRD
+    envins: PRD_279
+    instanceCode: redis-lyzsgh6t
+    tenant: platform
+    env: prd
+    servicename: redis
+    serviceins: redis-lyzsgh6t
+  namespace: platform-jumpserver # 适配性修改可能 修改为目标命名空间
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    shardName: jumpserver-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jumpserver-redis-read
+  labels:
+    shardName: jumpserver-redis
+    tenantid: platform
+    appid: JUMPSERVER
+    envtype: PRD
+    envins: PRD_279
+    instanceCode: redis-lyzsgh6t
+    tenant: platform
+    env: prd
+    servicename: redis
+    serviceins: redis-lyzsgh6t
+  namespace: platform-jumpserver # 适配性修改可能 修改为目标命名空间
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    shardName: jumpserver-redis
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jumpserver-redis
+  namespace: platform-jumpserver # 适配性修改可能 修改为目标命名空间
+spec:
+  selector:
+    matchLabels:
+      shardName: jumpserver-redis
+  serviceName: jumpserver-redis
+  replicas: 2
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        shardName: jumpserver-redis
+        tenantid: platform
+        appid: JUMPSERVER
+        envtype: PRD
+        envins: PRD_279
+        instanceCode: redis-lyzsgh6t
+        tenant: platform
+        env: prd
+        servicename: redis
+        serviceins: redis-lyzsgh6t
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - "true"
+        # pod 反亲和性：不要将当前pod调度到已存在【shardName: jumpserver-redis标签的pod】的节点上
+        # 节点反亲和性：不要将当前pod调度到已存在【app: sentinel】的节点上
+        # 每个k8s节点上都会有kubernetes.io/hostname: node-name这样的标签，以kubernetes.io/hostname作为标签，意思就是按照节点作为拓扑纬度，一个节点会被认为是拓扑中的同一位置
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: shardName
+                    operator: In
+                    values:
+                      - jumpserver-redis
+                  - key: app
+                    operator: In
+                    values:
+                      - sentinel
+              topologyKey: kubernetes.io/hostname
+      initContainers:
+        - name: init-redis
+          image: harbor.inner.beankeji.com/component/redis:6.2
+          command:
+            - /bin/bash
+          args:
+            - /mnt/redis-config/redis-init.sh
+          env:
+            - name: SENTINEL_SERVICE_HEADLESS
+              value: sentinel-alpha  # 适配性修改可能 修改为当前实例的sentinel
+            - name: SENTINEL_SERVICE_CLUSTERIP
+              value: sentinel-alpha-read.redis
+            - name: SENTINEL_PORT
+              value: "26379"
+          volumeMounts:
+            - name: jumpserver-redis
+              mountPath: /data
+            - name: redis-config
+              mountPath: /mnt/redis-config
+            - name: pod-info
+              mountPath: /etc/pod-info
+              readOnly: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+      containers:
+        - name: redis
+          image: harbor.inner.beankeji.com/component/redis:6.2
+          # 加args只覆盖掉dockerfile中CMD中的内容,让redis-server可以通过redis用户去启动
+          args:
+            - /data/redis.conf
+          env:
+            - name: SENTINEL_SERVICE_HEADLESS
+              value: sentinel-alpha # 适配性修改可能 修改为当前实例的sentinel
+            - name: SENTINEL_SERVICE_CLUSTERIP
+              value: sentinel-alpha-read.redis
+            - name: SENTINEL_PORT
+              value: "26379"
+          ports:
+            - name: redis
+              containerPort: 6379
+          volumeMounts:
+            - name: jumpserver-redis
+              mountPath: /data
+            - name: redis-config
+              mountPath: /mnt/redis-config
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+#          livenessProbe:
+#            exec:
+#              command: [ "redis-cli", "PING" ]
+#            initialDelaySeconds: 30
+#            periodSeconds: 1
+#            timeoutSeconds: 1
+#            failureThreshold: 120 # pod出问题两分钟以后再重建，让sentinel来得及主从切换，否则如果在sentinel主从切换换之前就启动，那么主上的数据是空的，并且副本数据全部丢失, 存活探针直接重启容器，不会走初始化容器的逻辑，所以考虑是不是把存活探针去掉
+          readinessProbe:
+            exec:
+              command: [ "redis-cli", "PING" ]
+            periodSeconds: 1
+            timeoutSeconds: 1
+            failureThreshold: 10
+          lifecycle:
+            postStart:
+              exec:
+                command: [ "/bin/bash", "/mnt/redis-config/post-start.sh" ]
+            preStop:
+              exec:
+                command: [ "/bin/bash", "/mnt/redis-config/save.sh" ]
+        - name: redis-exporter
+          image: harbor.inner.beankeji.com/component/redis_exporter:alpine
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          ports:
+            - containerPort: 9121
+      restartPolicy: Always
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-common
+        - name: pod-info
+          projected:
+            sources:
+              - downwardAPI:
+                  items:
+                    - path: "memory_limit"
+                      resourceFieldRef:
+                        containerName: redis
+                        resource: limits.memory
+  volumeClaimTemplates:
+    - metadata:
+        name: jumpserver-redis
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: csi-rbd-sc
+        resources:
+          requests:
+            storage: 75Gi

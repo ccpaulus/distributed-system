@@ -1,0 +1,913 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-common
+  labels:
+    app: redis
+    system: snrs
+  namespace: redis # 适配性修改可能 修改为目标命名空间
+data:
+  redis.conf: |
+    dir /data
+    logfile "redis.log"
+    loglevel notice
+    appendonly no
+    appendfilename "appendonly.aof"
+    save ""
+
+  sentinel.conf: |
+    logfile "/data/sentinel.log"
+    dir "/data"
+
+  sentinel-registry.conf: |
+    # 登记在使用中的sentinel
+    sentinelName0:sentinel-alpha
+
+  sentinel-init.sh: |
+    #!/bin/bash
+    set -ux
+
+    # 主机名称
+    HOSTNAME="$(hostname)"
+    # 主机序号
+    INDEX="${HOSTNAME##*-}"
+    # 客观宕机阈值
+    QUORUM="2"
+    # 配置文件目录
+    SENTINEL_CONF_DIR=/data
+    # 数据文件目录
+    SENTINEL_DATA_DIR=/data
+    # sentinel配置文件
+    SENTINEL_CONF=${SENTINEL_CONF_DIR}/sentinel.conf
+    # sentinel端口
+    SENTINEL_PORT=26379
+    # 初始化容器日志
+    INIT_LOG="${SENTINEL_DATA_DIR}/initContainer.log"
+    # 当前pod的ip地址
+    ANNOUNCE_IP=$(getent hosts "${HOSTNAME}" | awk '{ print $1 }')
+
+    # 打印当前pod信息
+    print_pod_info() {
+        {
+          echo "[$(date)] HOSTNAME: ${HOSTNAME}"
+          echo "[$(date)] INDEX: ${INDEX}"
+          echo "[$(date)] QUORUM: ${QUORUM}"
+          echo "[$(date)] SENTINEL_CONF_DIR: ${SENTINEL_CONF_DIR}"
+          echo "[$(date)] SENTINEL_DATA_DIR: ${SENTINEL_DATA_DIR}"
+          echo "[$(date)] SENTINEL_CONF: ${SENTINEL_CONF}"
+          echo "[$(date)] SENTINEL_PORT: ${SENTINEL_PORT}"
+          echo "[$(date)] HS_NAME: ${HS_NAME}"
+          echo "[$(date)] INIT_LOG: ${INIT_LOG}"
+          echo "[$(date)] ANNOUNCE_IP: ${ANNOUNCE_IP}"
+          echo "[$(date)] $(ls -l ${SENTINEL_CONF_DIR})"
+        } >> "${INIT_LOG}"
+    }
+
+    # 发布自己的ip
+    announce_ip() {
+      echo "${HOSTNAME} begin announce: ${ANNOUNCE_IP} and port: ${SENTINEL_PORT}" >> "${INIT_LOG}"
+      # 发布自己的ip,以兼容nat场景
+      sed -i '/sentinel announce-ip/d' ${SENTINEL_CONF}
+      echo "sentinel announce-ip ${ANNOUNCE_IP}" >> ${SENTINEL_CONF}
+
+      # 发布自己的port，以兼容端口映射场景
+      sed -i '/sentinel announce-port/d' ${SENTINEL_CONF}
+      echo "sentinel announce-port ${SENTINEL_PORT}" >> ${SENTINEL_CONF}
+    }
+
+    # 打印pod信息
+    print_pod_info
+
+    # 如果发现/data/sentinel.conf文件已存在，则说明sentinel可能是被重建了，此时不执行初始化容器相关逻辑
+    if [ -f ${SENTINEL_CONF} ]; then
+      echo "${SENTINEL_CONF} is exist, maybe sentinel is rebuild" >> "${INIT_LOG}"
+      # 重新发布自己的ip 和 port
+      announce_ip
+      exit 0
+    fi
+
+    # 拷贝配置文件到指定的配置文件目录,这个文件最终会被拷贝到宿主机的【pv所在的宿主机目】目录下
+    cp /mnt/sentinel-config/sentinel.conf "${SENTINEL_CONF_DIR}"
+
+    # 发布自己的ip和port
+    announce_ip
+
+    echo "${SENTINEL_CONF} is ready..." >> "${INIT_LOG}"
+
+  redis-init.sh: |
+    #!/bin/bash
+    set -ux
+
+    # 主机名称 eg: snrs-alpha-0
+    HOSTNAME="$(hostname)"
+    # 主机序号 eg: 0
+    INDEX="${HOSTNAME##*-}"
+    # 主节点名称，即shard名称 eg: snrs-alpha
+    SHARD_NAME=${HOSTNAME%-*}
+    # 配置文件目录
+    REDIS_CONF_DIR=/data
+    # 数据文件目录
+    REDIS_DATA_DIR=/data
+    # redis配置文件 /data/redis.conf
+    REDIS_CONF="${REDIS_CONF_DIR}/redis.conf"
+    # 初始化容器日志
+    INIT_LOG="${REDIS_CONF_DIR}/initContainer.log"
+    # redis端口号
+    REDIS_PORT=6379
+    # 当前pod是否是被重建的
+    RECONSTRUCTED="T"
+    # 当前pod的ip地址
+    ANNOUNCE_IP=$(getent hosts "${HOSTNAME}" | awk '{ print $1 }')
+    # 默认master节点的pod名称 eg: snrs-alpha-0.snrs-alpha
+    MASTER_POD_HOSTNAME_DEFAULT="${SHARD_NAME}-0.${SHARD_NAME}"
+    # 记录当前pod ip
+    MY_IP="${REDIS_DATA_DIR}/myip"
+    # redis基础设施所属的sentinel,固定为sentinel-alpha-read（redis基础设施指的是用于支撑其他redis创建的redis实例）
+    INFRASTRUCTURE_SENTINEL_NAME="sentinel-alpha-read.redis"
+    # redis基础设施所属的sentinel端口
+    INFRASTRUCTURE_SENTINEL_PORT=26379
+    # redis基础设施shard名称
+    INFRASTRUCTURE_SHARD_NAME="redis-infrastructure"
+    # redis基础设置主节点
+    INFRASTRUCTURE_MASTER_IP=$(redis-cli -h "${INFRASTRUCTURE_SENTINEL_NAME}" -p "${INFRASTRUCTURE_SENTINEL_PORT}" sentinel get-master-addr-by-name "${INFRASTRUCTURE_SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+    # redis基础设置默认端口
+    INFRASTRUCTURE_MASTER_PORT="6379"
+    # sentinel地址
+    SENTINEL_SERVICE=${SENTINEL_SERVICE_CLUSTERIP}
+    # POD内存限制暴露的路径
+    POD_INFO_MEMORY_LIMIT="/etc/pod-info/memory_limit"
+    # 内存使用比率
+    MEMORY_RATIO=0.8
+    # 从节点是否宕机或未创建，该变量用于在主节点启动时判断是否需要做主从切换
+    ALL_SLAVE_IS_DOWN="F"
+
+    log() {
+      echo "[$(date "+%Y-%m-%d %k:%M:%S")] " "$@" >>${INIT_LOG}
+    }
+
+    function quit() {
+      case $1 in
+      0)
+        exit 0
+        ;;
+      2)
+        echo "sentinel is not ready" >&2
+        exit 2
+        ;;
+      3)
+        echo "ip conflict check not pass" >&2
+        exit 3
+        ;;
+      4)
+        echo "INFRASTRUCTURE_MASTER_IP is null" >&2
+        exit 4
+        ;;
+      5)
+        echo "modify client-output-buffer-limit slave failed" >&2
+        exit 5
+        ;;
+      6)
+        echo "write_slave_conf error, master is null" >&2
+        exit 6
+        ;;
+      7)
+        echo "MASTER_POD_IP_DEFAULT is null, please check key master-ip-20220320234600 in MASTER exists" >&2
+        exit 7
+        ;;
+      8)
+        echo "master unreachable when i write slave config" >&2
+        exit 8
+        ;;
+      9)
+        echo "Sentinel 's startup time is less than 1 minute" >&2
+        exit 9
+        ;;
+      10)
+        echo "remove shard from sentinel is fail" >&2
+        exit 10
+        ;;
+      11)
+        echo "register shard to sentinel is fail" >&2
+        exit 11
+        ;;
+      esac
+    }
+
+    # 检查sentinel是否就绪
+    check_sentinel_ready() {
+      if [ -z "${SENTINEL_SERVICE}" ]; then
+        log "sentinel not config, continue create shard"
+        return
+      fi
+
+      log "find sentinel ${SENTINEL_SERVICE}, start check sentinel is ready..."
+      # 环境变量中的sentinel名称不为空，则检查sentinel是否就绪
+      if [ "$(timeout 5 redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" PING)" != "PONG" ]; then
+        log "sentinel ${SENTINEL_SERVICE}  is not ready, exit with 2"
+        quit 2
+      fi
+
+      # 校验启动时间，sentinel的启动时间超过1分钟以后，才认为sentinel集群是就绪的。否则会出现sentinel刚刚启动，还未来得及进行宕机检测，认为主从节点状态正常的情况（但此时实际上主从节点可能是宕机的）
+      local true_uptime_seconds=60
+      local uptime_seconds
+      uptime_seconds=$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" info server | grep "uptime_in_seconds" | awk -F":" '{print $2}' | sed $'s/[^[:print:]\t]//g')
+      log "uptime_in_seconds: ${uptime_seconds} true_uptime_seconds: ${true_uptime_seconds}"
+      if [ "${uptime_seconds}" -ge "${true_uptime_seconds}" ]; then
+        log "sentinel ${SENTINEL_SERVICE}  is ready, continue create shard"
+        return
+      fi
+
+      # sentinel的启动时间小于1分钟，异常退出
+      log "Sentinel ${SENTINEL_SERVICE} 's startup time is less than 1 minute, so I think sentinel is not ready, exit with 9"
+      quit 9
+    }
+
+    # 从redis-infrastructure中获取所有已注册到sentinel的主节点信息，比对当前pod的ip是否在其中
+    # 如果不在其中，则正常创建
+    # 如果在其中，比对shard名称是否和sentinel中注册的一致，如果一致，则正常创建
+    # 如果在其中，并且shard名称不一致,则说明某个shard中的pod被重建了，但是其对应的ip被当前pod快速复用，并且sentinel并未来得及故障转移。
+    # 此时为了避免主从信息混乱，当前pod应该异常退出，等待故障shard对应的sentinel故障转移完成之后，再启动pod
+    check_ip_conflict() {
+      log "start check ip ${ANNOUNCE_IP} is conflict..."
+      if [ "${SHARD_NAME}" == "${INFRASTRUCTURE_SHARD_NAME}" ]; then
+        log "current pod is redis infrastructure ,skip conflict check"
+        return
+      fi
+
+      if [ -z "${INFRASTRUCTURE_MASTER_IP}" ]; then
+        log "INFRASTRUCTURE_MASTER_IP is null, please check it and fix"
+        quit 4
+      fi
+
+      # sentinel sentinel-alpha shardname redis-infrastructure
+      conflict_info=$(redis-cli -h "${INFRASTRUCTURE_MASTER_IP}" -p "${INFRASTRUCTURE_MASTER_PORT}" hgetall "${ANNOUNCE_IP}")
+      if [ -z "${conflict_info}" ]; then
+        log "ANNOUNCE_IP ${ANNOUNCE_IP} not exists ${INFRASTRUCTURE_SHARD_NAME}, no conflict, continue create"
+        return
+      fi
+
+      log "ANNOUNCE_IP ${ANNOUNCE_IP} exists ${INFRASTRUCTURE_SHARD_NAME}, continue conflict check..."
+      # sentinel中已注册的shard名称
+      shard_name_register=$(echo "${conflict_info}" | sed -n '/\<shardname\>/{n;p}' | xargs)
+      if [ "${SHARD_NAME}" == "${shard_name_register}" ]; then
+        log "shardNameRegister ${shard_name_register} equals current shardName ${SHARD_NAME}, no conflict, continue create"
+        return
+      else
+        log "shardNameRegister ${shard_name_register} not equals current shardName ${SHARD_NAME}, it is conflict, exit with 78"
+        quit 3
+      fi
+
+    }
+
+    # 打印当前pod信息
+    print_pod_info() {
+      log "HOSTNAME: ${HOSTNAME}"
+      log "INDEX: ${INDEX}"
+      log "SHARD_NAME: ${SHARD_NAME}"
+      log "REDIS_CONF_DIR: ${REDIS_CONF_DIR}"
+      log "REDIS_DATA_DIR: ${REDIS_DATA_DIR}"
+      log "REDIS_CONF: ${REDIS_CONF}"
+      log "INIT_LOG: ${INIT_LOG}"
+      log "REDIS_PORT: ${REDIS_PORT}"
+      log "ANNOUNCE_IP: ${ANNOUNCE_IP}"
+      log "MASTER_POD_HOSTNAME_DEFAULT: ${MASTER_POD_HOSTNAME_DEFAULT}"
+      log "SENTINEL_SERVICE_HEADLESS: ${SENTINEL_SERVICE_HEADLESS}"
+      log "SENTINEL_SERVICE: ${SENTINEL_SERVICE}"
+      log "SENTINEL_PORT: ${SENTINEL_PORT}"
+      log "MY_IP: ${MY_IP}"
+      log "MY_IP_VALUE: $(cat ${MY_IP})"
+      log "INFRASTRUCTURE_SENTINEL_NAME: ${INFRASTRUCTURE_SENTINEL_NAME}"
+      log "INFRASTRUCTURE_SENTINEL_PORT: ${INFRASTRUCTURE_SENTINEL_PORT}"
+      log "INFRASTRUCTURE_SHARD_NAME: ${INFRASTRUCTURE_SHARD_NAME}"
+      log "INFRASTRUCTURE_MASTER_IP: ${INFRASTRUCTURE_MASTER_IP}"
+      log "INFRASTRUCTURE_MASTER_PORT: ${INFRASTRUCTURE_MASTER_PORT}"
+      log "POD_INFO_MEMORY_LIMIT: ${POD_INFO_MEMORY_LIMIT}"
+      log "MEMORY_RATIO: ${MEMORY_RATIO}"
+      log "$(ls -l ${REDIS_CONF_DIR})"
+      log "print base info end =================================================="
+    }
+
+    set_maxmemory() {
+      # 设置maxmemory
+      pod_memory_limit=$(sed -n '1p' "${POD_INFO_MEMORY_LIMIT}" | sed 's/[ \t]*//g')
+      my_maxmemory=$(echo "$pod_memory_limit $MEMORY_RATIO" | awk '{printf("%.0f",$1*$2)}')
+      log "---I--- Config maxmemory is $my_maxmemory byte!"
+      sed -i '/maxmemory/d' ${REDIS_CONF}
+      echo "maxmemory ${my_maxmemory}" >>"${REDIS_CONF}"
+    }
+
+    # 设置主节点到从节点的输出缓冲区大小
+    set_replication_backlog() {
+      #根据机器内存梯度确定大小
+      ## mem(G) client-output-buffer-limit(MB)
+      ##  <2                  256
+      ##  [2,4]               384
+      ##  [4,8]               512
+      ##  [8,16]              768
+      ##  >16                 1024
+      max_2g=2048
+      max_4g=4096
+      max_8g=8192
+      max_16g=16384
+
+      # 从podinfo中取到配置的limits.memory
+      machine_mem_byte=$(sed -n '1p' "${POD_INFO_MEMORY_LIMIT}" | sed 's/[ \t]*//g')
+      # 换算成mb
+      machine_mem=$(("$machine_mem_byte"/1024/1024))
+
+      if [ "$machine_mem" -lt $max_2g ]; then
+        buffer_val=256
+      elif [ "$machine_mem" -lt $max_4g ]; then
+        buffer_val=384
+      elif [ "$machine_mem" -lt $max_8g ]; then
+        buffer_val=512
+      elif [ "$machine_mem" -lt $max_16g ]; then
+        buffer_val=768
+      else
+        buffer_val=1024
+      fi
+      log "---I--- machine memory:$machine_mem client-output-buffer-limit:$buffer_val"
+      # client-output-buffer-limit <class> <hard limit> <soft limit> <soft seconds>
+      buffer_str="client-output-buffer-limit replica ${buffer_val}mb ${buffer_val}mb 0"
+      n=$(grep -E -wc "^client-output-buffer-limit replica" "${REDIS_CONF}")
+      if [ "$n" -eq 0 ]; then
+        # $ 代表的是最后一行，而 a 的动作是新增，因此该文件最后新增 client-output-buffer-limit replica ${buffer_val}mb ${buffer_val}mb 0
+        sed -i '$a '"$buffer_str"'' "${REDIS_CONF}"
+      else
+        sed -i "s/^client-output-buffer-limit replica.*$/$buffer_str/g" "${REDIS_CONF}"
+      fi
+      num=$(grep -wc "$buffer_str" "${REDIS_CONF}")
+      if [ "$num" -eq 0 ]; then
+        log "---E--- modify $buffer_str failed !"
+        quit 5
+      fi
+      log " ---I--- modify $buffer_str successful !"
+    }
+
+    # 创建redis配置文件
+    create_redis_conf() {
+      if [ ! -f "${REDIS_CONF}" ]; then
+        # 第一次创建pod
+        RECONSTRUCTED="F"
+        log "${REDIS_CONF} is not found, create redis.conf..."
+        # 拷贝配置文件
+        cp /mnt/redis-config/redis.conf "${REDIS_CONF_DIR}"
+
+        if [ "${INDEX}" != "0" ]; then
+          # 默认master节点的ip地址, 逻辑是直接连接主节点然后执行get命令取到myip-ljz-20013921的值，这个值在主节点启动时被写入
+          MASTER_POD_IP_DEFAULT=$(redis-cli -h "${MASTER_POD_HOSTNAME_DEFAULT}" -p "${REDIS_PORT}" get "master-ip-20220320234600")
+          if [ -z "${MASTER_POD_IP_DEFAULT}" ]; then
+              log "key master-ip-20220320234600 in MASTER ${MASTER_POD_HOSTNAME_DEFAULT} is null ,exit with 7"
+              quit 7
+          fi
+
+          {
+            # redis.conf配置中追加 replica-announce-ip <ip> 以兼容NAT场景，这个配置会在从节点向主节点发起握手时用到
+            echo "replica-announce-ip ${ANNOUNCE_IP}"
+            # redis.conf配置中追加 replica-announce-ip <port> 以兼容端口映射场景
+            echo "replica-announce-port ${REDIS_PORT}"
+            # 默认挂到索引为0的节点上
+            echo "replicaof ${MASTER_POD_IP_DEFAULT} ${REDIS_PORT}"
+          } >>"${REDIS_CONF}"
+
+        fi
+      fi
+      log "${REDIS_CONF} already..."
+    }
+
+    # 写入从节点的相关配置
+    write_slave_conf() {
+      if [ -z "$1" ]; then
+        log "find master is null when i write slave config..."
+        quit 6
+      fi
+
+      # 启动之前，保证master节点是存活的，否则异常退出。主要是为了避免当主从节点同时宕机重启的情况下，从节点先于主节点启动，此时从节点从sentinel中获取到的主节点ip可能是过期的（即主节点重建之前的ip）。
+      # 如果取到的主节点ip是过期的，那么从节点会一直卡在后面的postStart的等待sentinel reset操作完成的逻辑里
+      # 所以这里合适的处理方式是如果发现无法链接，就异常退出
+      local my_master_response
+      my_master_response=$(timeout 5 redis-cli -h "$1" -p "${REDIS_PORT}" PING)
+      if [ "${my_master_response}" != "PONG" ]; then
+          log "master unreachable when i write slave config, i will exit with 8"
+          quit 8
+      fi
+
+      log "current pod ${HOSTNAME} is slave, write slave conf info..."
+      # redis.conf配置中追加 replica-announce-ip <ip> 以兼容NAT场景，这个配置会在从节点向主节点发起握手时用到
+      sed -i '/replica-announce-ip/d' ${REDIS_CONF}
+      echo "replica-announce-ip ${ANNOUNCE_IP}" >>${REDIS_CONF}
+
+      # redis.conf配置中追加 replica-announce-ip <port> 以兼容端口映射场景
+      sed -i '/replica-announce-port/d' ${REDIS_CONF}
+      echo "replica-announce-port ${REDIS_PORT}" >>${REDIS_CONF}
+
+      # 删除之前的replicaof配置
+      sed -i '/replicaof/d' ${REDIS_CONF}
+      # 写入新的replicaof 主机名 6379
+      echo "replicaof $1 ${REDIS_PORT}" >>${REDIS_CONF}
+    }
+
+    # 判定主节点是否宕机，如果宕机，
+    judge_slave_is_down() {
+      log "start judge all slave is down..."
+      # ALL_SLAVE_IS_DOWN="T"
+      # 获取所有的从节点
+      local my_slaves=
+      my_slaves=$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" sentinel slaves "${SHARD_NAME}")
+      if [ -z "${my_slaves}" ]; then
+          log "sentinel ${SENTINEL_SERVICE} slaves is empty, ALL_SLAVE_IS_DOWN is T, i will start as master"
+          ALL_SLAVE_IS_DOWN="T"
+          return
+      fi
+
+      # 当用到sed不同的编辑命令时候，用{}且不同编辑命令之间用分号分隔
+      # n 从另一个文件中读文本下一行，并从下一条命令而不是第一条命令开始对其的处理
+      # p 打印匹配行（和-n选项一起合用）
+      # < 锚点词首----相当于 \b，用法格式：<pattern
+      # > 锚点词尾，用法格式： >pattern
+      # xargs 可以将单行或多行文本输入转换为其他格式，例如多行变单行，单行变多行。
+      # xargs 默认的命令是 echo，这意味着通过管道传递给 xargs 的输入将会包含换行和空白，不过通过 xargs 的处理，换行和空白将被空格取代。
+      slave_names=$(echo "${my_slaves}" | sed -n '/\<name\>/{n;p}' | xargs)
+      slave_num=$(echo "${slave_names}" | awk -F " " '{print NF}')
+      slave_flags=$(echo "${my_slaves}" | sed -n '/\<flags\>/{n;p}' | xargs)
+      for ((i = 0, k = 1; i < slave_num; i++, k++)); do
+        slave_name_arr[$i]=$(echo "${slave_names}" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+        slave_flag_arr[$i]=$(echo "${slave_flags}" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+      done
+
+      log "slave_name_arr: ${slave_name_arr[*]}"
+      log "slave_flag_arr: ${slave_flag_arr[*]}"
+
+      for ((m = 0; m < slave_num; m++)); do
+        slave_name=${slave_name_arr[$m]}
+        slave_flag=${slave_flag_arr[$m]}
+        # 有任何一个从节点存活，则认为可以进行主从切换
+        if [ "${slave_flag}" == "slave" ]; then
+          log "slave ${slave_name} 's flags is alive, ALL_SLAVE_IS_DOWN is F, i will start failover"
+          ALL_SLAVE_IS_DOWN="F"
+          return
+        fi
+      done
+
+      log "all slave is down, ALL_SLAVE_IS_DOWN is T, i will start as master"
+      ALL_SLAVE_IS_DOWN="T"
+    }
+
+    # 从sentinel中将自己移除
+    remove_from_sentinel() {
+      log "try remove myself from sentinel..."
+
+      for i in 0 1 2; do
+        local current_sentinel="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+        local remove_ret
+        remove_ret="$(redis-cli -h "${current_sentinel}" -p "${SENTINEL_PORT}" sentinel remove "${SHARD_NAME}")"
+        log "${current_sentinel} remove shard ${SHARD_NAME} ret is ${remove_ret}"
+        if [ "${remove_ret}" == "OK" ]; then
+          # 移除成功
+          continue
+        fi
+
+        if [[ "${remove_ret}" =~ "No such master" ]]; then
+          # 没有这个shard，也算是成功
+          continue
+        fi
+
+        # 移除失败，异常退出
+        log "[remove_from_sentinel] ${current_sentinel} remove shard ${SHARD_NAME} fail, exit with 10"
+        quit 10
+      done
+    }
+
+    register_to_sentinel() {
+      log "try register myself to sentinel..."
+      # 注册sentinel
+      for i in 0 1 2; do
+        local current_sentinel="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+        local monitor_ret
+        monitor_ret="$(redis-cli -h "${current_sentinel}" -p "${SENTINEL_PORT}" sentinel monitor "${SHARD_NAME}" "${ANNOUNCE_IP}" 6379 2)"
+        log "${current_sentinel} monitor shard ${SHARD_NAME} ${ANNOUNCE_IP} 6379 ret is ${monitor_ret}"
+        if [ "${monitor_ret}" != "OK" ]; then
+          log "[register_to_sentinel] register shard ${SHARD_NAME} to sentinel ${current_sentinel} is fail, exit with 11"
+          quit 11
+        fi
+      done
+    }
+
+    # 设置主从信息
+    set_replication_info() {
+      # 在 ${REDIS_CONF}文件已存在的场景下（无论是已存在还是上面新建的），都尝试从Sentinel中获取主从信息，以sentinel中的信息为准
+      if [ "$(timeout 5 redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" PING)" == "PONG" ]; then
+        # 如果sentinel存在, 从master节点查询主节点主机名
+        log "sentinel ${SENTINEL_SERVICE} found, finding master..."
+
+        # 从sentinel中获取主节点ip
+        MASTER=$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" sentinel get-master-addr-by-name "${SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+        if [ -n "${MASTER}" ]; then
+          # 成功找到主节点
+          log "master found : ${MASTER}, updating redis.conf"
+
+          # 这个地方主节点重建之后，pod ip已经可能变掉了，"${MASTER}" == "${ANNOUNCE_IP}" 这个判断不再成立，然后直接认为自己已经是从节点了，挂到从这里获取到的MASTER上，但此时获取到的master很有可能还是当前pod的上一个ip, 即那个失效的ip
+          # 所以需要取到这个pod之前的ip,发现如果它之前的ip是主节点的话，也认为当前pod是主节点
+          PRE_IP=""
+          if [ "${RECONSTRUCTED}" == "T" ]; then
+            # 重建的pod，从MY_IP文件中取出之前的ip
+            PRE_IP=$(cat "${MY_IP}")
+          fi
+
+          # 分两种情况：
+          #   1、pod第一次创建，但是sentinel里面已经有这个shard的信息了，并且当前节点是主节点
+          #   2、master节点对应的pod被重建，但是pod ip可能发生改变，可能未发生改变，无论有没有改变，新旧两个ip中有一个等于主节点，那么就认为当前pod是主节点
+          if [ "${MASTER}" == "${ANNOUNCE_IP}" ] || [ "${MASTER}" == "${PRE_IP}" ]; then
+            log "current pod ${HOSTNAME} is master"
+
+            # 判定从节点是否宕机，如果从节点也宕机了，没必要主从切换，当前节点还是作为主节点启动
+            judge_slave_is_down
+
+            # 当前节点是主节点,此时需要判断主节点是否是被重建的，如果是被重建的，要防止如下这种情况：
+            #     主节点宕机，未开启持久化，数据全部丢失，但是很快被k8s重建
+            #     此时，可能sentinel宕机检测尚未生效（默认30s），没有进行主从切换，空的主节点会将从节点的有效数据全部覆盖
+            #     所以，这里检查如果重建的是主节点，延迟等待sentinel主从切换成功以后
+            # 如果此方案不行，考虑使用Supervisord作为容器的1号进程作为1号进程来实现。当Redis挂了，Supervisord默认不会拉起它，但容器还是活的，Redis进程却不存在了，想让Redis活过来很简单，删除掉Pod即可。K8S会自动重新拉起它。
+            if [ "${RECONSTRUCTED}" == "T" ] && [ "${ALL_SLAVE_IS_DOWN}" == "F" ]; then
+              log "current pod is master, and it is reconstructed, so start sentinel failover..."
+              # 使用0号节点发起主从切换 sentinel-alpha-0.sentinel-alpha
+              FAILOVER_RESULT=$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" sentinel failover "${SHARD_NAME}")
+              log "FAILOVER_RESULT: ${FAILOVER_RESULT}" >>"${INIT_LOG}"
+
+              sleep 3s
+
+              MASTER="$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" sentinel get-master-addr-by-name "${SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+              while [ "${MASTER}" == "${PRE_IP}" ]; do
+                sleep 1s
+                echo "[$(date)] master still is ${MASTER}, waiting failover done..." >>"${INIT_LOG}"
+                MASTER="$(redis-cli -h "${SENTINEL_SERVICE}" -p "${SENTINEL_PORT}" sentinel get-master-addr-by-name "${SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+              done
+
+              log "failover is success. current master is ${MASTER}"
+              # 写入从节点需要的配置信息
+              write_slave_conf "${MASTER}"
+            elif [ "${RECONSTRUCTED}" == "T" ] && [ "${ALL_SLAVE_IS_DOWN}" == "T" ]; then
+              log "current pod ${HOSTNAME} is master, but it is reconstructed and all slave is down, I will remove myself from sentinel and re-register myself with my new ip"
+              # 如果发现当前节点是主节点，并且不是第一次创建，并且所有从节点已经全部宕机了，此时需要将自己从sentinel中移除，然后使用最新的ip重新注册sentinel，否则sentinel会监控不到重建的主节点
+              remove_from_sentinel
+              register_to_sentinel
+            else
+              log "current pod ${HOSTNAME} is master, but is not reconstructed, so follow master redis.conf"
+            fi
+          else
+            # 这个分支说明是从节点第一次创建或者被重建
+            write_slave_conf "${MASTER}"
+          fi
+        else
+          # 有sentinel，但是未找到主节点，可能新建的pod, 或者是重建，但是没有注册过sentinel,此时正常结束，按照已有的配置文件来
+          log "sentinel is ready, but not found master info, follow master redis.conf"
+        fi
+      else
+        log "sentinel is not ready, follow ${REDIS_CONF}" >>"${INIT_LOG}"
+        # 没找到sentinel集群，也正常创建
+      fi
+    }
+
+    # 1、打印当前pod信息
+    print_pod_info
+
+    # 2、sentinel检测
+    check_sentinel_ready
+
+    # 3、ip冲突检测
+    # check_ip_conflict
+
+    # 4、创建redis配置文件，如果需要的话
+    create_redis_conf
+
+    log "RECONSTRUCTED value is ${RECONSTRUCTED}"
+
+    # 5、设置maxmemory
+    set_maxmemory
+
+    # 6、设置复制积压缓冲区大小
+    set_replication_backlog
+
+    # 7、设置主从角色
+    set_replication_info
+
+    echo "redis is Ready..."
+
+  post-start.sh: |
+    #!/bin/bash
+    set -ux
+
+    # 数据文件目录
+    REDIS_DATA_DIR=/data
+    # 初始化容器日志
+    POST_START_LOG="${REDIS_DATA_DIR}/postStart.log"
+    # 记录当前pod ip
+    MY_IP="${REDIS_DATA_DIR}/myip"
+    # 获取当前主机ip
+    ANNOUNCE_IP=$(getent hosts "${HOSTNAME}" | awk '{ print $1 }')
+    # sentinel地址
+    SENTINEL_SERVICE=${SENTINEL_SERVICE_CLUSTERIP}
+    # sentinel端口地址
+    MY_SENTINEL_PORT=${SENTINEL_PORT}
+    # 主机名称
+    HOSTNAME="$(hostname)"
+    # shardname
+    SHARD_NAME=${HOSTNAME%-*}
+
+    log() {
+      echo "[$(date "+%Y-%m-%d %k:%M:%S")] " "$@" >> ${POST_START_LOG}
+    }
+
+    # 主从同步状态
+    get_replica_sync_stat() {
+      replicas_info=$(redis-cli -h "${SENTINEL_SERVICE}" -p "${MY_SENTINEL_PORT}" sentinel replicas "${SHARD_NAME}")
+      # No such master with that name
+      if [ -z "${replicas_info}" ] || [[ "${replicas_info}" =~ "No such master" ]]; then
+          log "No such master with that name ${SHARD_NAME}, so no need wait for sync done"
+          exit 0
+      fi
+
+      # 当用到sed不同的编辑命令时候，用{}且不同编辑命令之间用分号分隔
+      # n 从另一个文件中读文本下一行，并从下一条命令而不是第一条命令开始对其的处理
+      # 打印匹配行（和-n选项一起合用）
+      # < 锚点词首----相当于 \b，用法格式：<pattern
+      # > 锚点词尾，用法格式： >pattern
+      # xargs 可以将单行或多行文本输入转换为其他格式，例如多行变单行，单行变多行。
+      # xargs 默认的命令是 echo，这意味着通过管道传递给 xargs 的输入将会包含换行和空白，不过通过 xargs 的处理，换行和空白将被空格取代。
+      replica_ips=$(echo "$replicas_info" | sed -n '/\<ip\>/{n;p}' | xargs)
+      replica_num=$(echo "$replica_ips" | awk -F " " '{print NF}')
+      master_link_status=$(echo "$replicas_info" | sed -n '/\<master-link-status\>/{n;p}' | xargs)
+      for ((i = 0, k = 1; i < replica_num; i++, k++)); do
+        replica_ips_arr[$i]=$(echo "$replica_ips" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+        master_link_status_arr[$i]=$(echo "$master_link_status" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+      done
+
+      log "replica_ips_arr: ${replica_ips_arr[*]}"
+      log "master_link_status_arr: ${master_link_status_arr[*]}"
+
+      for ((m = 0; m < replica_num; m++)); do
+        replica_ip=${replica_ips_arr[$m]}
+        master_link_stat=${master_link_status_arr[$m]}
+        if [ "${ANNOUNCE_IP}" == "${replica_ip}" ]; then
+            if [ "${master_link_stat}" == "ok" ]; then
+                log "current pod ${ANNOUNCE_IP} master_link_stat is ok, replica sync is done!"
+                exit 0
+            fi
+        fi
+      done
+      log "replica sync is processing..."
+    }
+
+    # 自动注册sentinel
+    register_sentinel_if_need() {
+      log "try register sentinel if need..."
+      redis_role=$(redis-cli role | sed -n '1p')
+      if [ "${redis_role}" != "master" ]; then
+        log "current pod is not master, nothing todo"
+        return
+      fi
+
+      if [ -z "${SENTINEL_SERVICE_HEADLESS}" ]; then
+        log "sentinel is not specified, so do nothing"
+        return
+      fi
+
+      # 如果当前shard已经存在余某个sentinel上了，就不再注册
+      for i in 0 1 2; do
+        local current_sentinel="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+        local master_ip
+        master_ip="$(redis-cli -h "${current_sentinel}" -p "${MY_SENTINEL_PORT}" sentinel get-master-addr-by-name "${SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+        if [ -n "${master_ip}" ]; then
+          log "${SHARD_NAME} already exists in sentinel, so do nothing"
+          return
+        fi
+      done
+
+      # 自动注册sentinel
+      for i in 0 1 2; do
+        local current_sentinel="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+        local monitor_ret
+        monitor_ret="$(redis-cli -h "${current_sentinel}" -p "${MY_SENTINEL_PORT}" sentinel monitor "${SHARD_NAME}" "${ANNOUNCE_IP}" 6379 2)"
+        log "${current_sentinel} monitor ${SHARD_NAME} ret ${monitor_ret}"
+      done
+    }
+
+    # =======================================start================================
+
+    # 1、等待redis-server就绪
+    READY="$(timeout 5 redis-cli PING)"
+    until [ "${READY}" == "PONG" ]; do
+      log "wait redis server is ready..."
+      sleep 1s
+      READY="$(timeout 5 redis-cli PING)"
+      log "READY: ${READY}"
+    done
+
+    log "current redis-server is ready..."
+
+    # 2、主节点才需要写入master-ip-20220320234600这个值，这个key主要是告诉从节点启动时，应该默认挂到哪个节点上，只有pod第一次创建才会被用到
+    redis_role=$(redis-cli role | sed -n '1p')
+    if [ "${redis_role}" == "master" ]; then
+      log "master is ready, begin write master ip ${ANNOUNCE_IP}"
+      # 为最大程度避免被覆盖，使用比较特殊的key
+      redis-cli set "master-ip-20220320234600" "${ANNOUNCE_IP}" EX 3600
+      log "ANNOUNCE_IP: ${ANNOUNCE_IP} write success"
+    fi
+
+
+    # 3、在postStart动作中reset一下当前实例，因为此时可能是pod被重建了，之前的ip会被sentinel当作宕机的ip依旧挂载当前实例下，，Sentinel节点依然会对这些下线节点进行定期监控
+    # 一旦这个ip被其他pod重用，就会造成集群信息混乱,所以这里需要reset一下
+
+    if [ -n "${SENTINEL_SERVICE_HEADLESS}" ] && [ "${redis_role}" == "slave" ]; then
+        log "current redis-server is ready, begin sentinel reset..."
+        if [ "${READY}" == "PONG" ]; then
+          # 当前pod已经就绪了，向sentinel发送reset请求
+          for i in 0 1 2; do
+            SENTINEL_NAME="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+            # reset的动作包括： 清除主节点的相关状态（例如故障转移），重新发现从节点和 Sentinel节点。
+            RESET_RESULT=$(redis-cli -h "${SENTINEL_NAME}" -p "${SENTINEL_PORT}" sentinel reset "${SHARD_NAME}")
+            log "SENTINEL_NAME: ${SENTINEL_NAME}, SENTINEL_PORT: ${SENTINEL_PORT}, RESET_RESULT: ${RESET_RESULT}"
+            RESET_RET[$i]="${RESET_RESULT}"
+          done
+        fi
+
+        log "RESET_RET: ${RESET_RET[*]}"
+
+        # 4、稍微等待一下，让reset操作完成
+        for i in 0 1 2 ; do
+          if [ "${RESET_RET[i]}" == "1" ]; then
+            SENTINEL_NAME="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+            log "the sentinel ${SENTINEL_NAME} reset result is 1, so i need to check the operation reset is finish..."
+            # 看下当前pod最新ip是否被sentinel感知
+            pod_ip_in_sentinel=$(redis-cli -h "${SENTINEL_NAME}" -p "${SENTINEL_PORT}" sentinel replicas "${SHARD_NAME}" | grep "${ANNOUNCE_IP}")
+            log "pod ip in sentinel is:  ${pod_ip_in_sentinel}"
+
+            until [ -n "${pod_ip_in_sentinel}" ]; do
+              log "wait reset finish..."
+              sleep 1s
+              pod_ip_in_sentinel=$(redis-cli -h "${SENTINEL_NAME}" -p "${SENTINEL_PORT}" sentinel replicas "${SHARD_NAME}" | grep "${ANNOUNCE_IP}")
+              log "pod ip in sentinel is:  ${pod_ip_in_sentinel}"
+            done
+
+            log "the sentinel ${SENTINEL_NAME}  reset operation is complete!"
+          fi
+        done
+    fi
+
+    # 5、写入当前pod的ip信息，主要是让主节点在被重建时，可以回忆起自己之前的ip
+    log "current redis-server is ready, begin write myip..."
+    echo "${ANNOUNCE_IP}" >"${MY_IP}"
+    log "MY_IP_VALUE: $(cat ${MY_IP})"
+
+    # 6、如果是第一次创建，自动注册到sentinel
+    register_sentinel_if_need
+
+    # 7、从节点需要等待主从同步完成以后，pod才可以启动
+    if [ "${redis_role}" == "slave" ]; then
+      # 如果是从节点，等待主从同步完成以后，再退出postStart。这是为了防止在内存中数据比较多的情况下，主从同步尚未完成，就再一次进行主从切换，导致部分数据丢失
+      log "current pod is slave, begin wait the master<->replica sync done..."
+      # 最多等待1200s, 即20分钟
+      for (( i = 0; i < 1200; i++ )); do
+        log "the ${i} time get get replica sync stat"
+        get_replica_sync_stat
+        sleep 1s
+      done
+
+      log "master<->replica sync Out of maximum time, exit with 1"
+      exit 1
+    fi
+
+  save.sh: |
+    #!/bin/bash
+    set -ux
+
+    # 数据文件目录
+    REDIS_DATA_DIR=/data
+    # 初始化容器日志
+    PRE_STOP_LOG="${REDIS_DATA_DIR}/preStop.log"
+    # shardname
+    SHARD_NAME=${HOSTNAME%-*}
+
+    log() {
+      echo "[$(date "+%Y-%m-%d %k:%M:%S")] " "$@" >> ${PRE_STOP_LOG}
+    }
+
+    # 自动注销sentinel
+    auto_log_off() {
+      log "try unRegister sentinel if need..."
+      redis_role=$(redis-cli role | sed -n '1p')
+      if [ "${redis_role}" != "master" ]; then
+        log "when i auto_log_off , find current pod is not master, nothing todo"
+        return
+      fi
+
+      if [ -z "${SENTINEL_SERVICE_HEADLESS}" ]; then
+        log "when i auto_log_off , find sentinel is not specified, so do nothing"
+        return
+      fi
+
+      for i in 0 1 2; do
+        local current_sentinel="${SENTINEL_SERVICE_HEADLESS}-${i}.${SENTINEL_SERVICE_HEADLESS}.redis"
+        local remove_ret
+        remove_ret="$(redis-cli -h "${current_sentinel}" -p "${SENTINEL_PORT}" sentinel remove "${SHARD_NAME}")"
+        log "${current_sentinel} monitor ${SHARD_NAME} remove ret ${remove_ret}"
+      done
+    }
+    #=================================start==============================
+    # 1、执行bgsave，防止数据丢失
+    redis-cli save
+    log "save is success"
+    
+    # 2、如果是主节点，将自己从sentinel中自动注销
+    # auto_log_off
+
+  register-master-ip.sh: |
+    #!/bin/bash
+
+    INFRASTRUCTURE_SENTINEL_NAME="sentinel-alpha-read.redis"
+    INFRASTRUCTURE_SENTINEL_PORT=26379
+    INFRASTRUCTURE_SHARD_NAME="redis-infrastructure"
+    INFRASTRUCTURE_MASTER_IP=$(redis-cli -h "${INFRASTRUCTURE_SENTINEL_NAME}" -p "${INFRASTRUCTURE_SENTINEL_PORT}" sentinel get-master-addr-by-name "${INFRASTRUCTURE_SHARD_NAME}" | grep -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+    INFRASTRUCTURE_MASTER_PORT="6379"
+    SENTINEL_REGISTRY_CONF="/mnt/redis-config/sentinel-registry.conf"
+    EXPIRE_SECONDS=90
+
+    log() {
+      echo "[$(date "+%Y-%m-%d %k:%M:%S")] " "$@" >&1
+    }
+
+    log "INFRASTRUCTURE_SENTINEL_NAME: ${INFRASTRUCTURE_SENTINEL_NAME}"
+    log "INFRASTRUCTURE_SENTINEL_PORT: ${INFRASTRUCTURE_SENTINEL_PORT}"
+    log "INFRASTRUCTURE_SHARD_NAME: ${INFRASTRUCTURE_SHARD_NAME}"
+    log "INFRASTRUCTURE_MASTER_IP: ${INFRASTRUCTURE_MASTER_IP}"
+    log "INFRASTRUCTURE_MASTER_PORT: ${INFRASTRUCTURE_MASTER_PORT}"
+    log "SENTINEL_REGISTRY_CONF: ${SENTINEL_REGISTRY_CONF}"
+    log "sentinel-registry.conf: $(xargs < ${SENTINEL_REGISTRY_CONF})"
+
+    if [ -z "${INFRASTRUCTURE_MASTER_IP}" ]; then
+      log "can not find infrastructure_master_ip, exit with 2"
+      exit 2
+    fi
+
+    sentinel_num=$(grep "sentinelName" ${SENTINEL_REGISTRY_CONF} -c)
+    if [ "${sentinel_num}" -eq 0 ]; then
+      log "sentinel-registry.conf is empty, exit with 0"
+      exit 0
+    fi
+
+    # -r 屏蔽\，如果没有该选项，则\作为一个转义字符，有的话 \就是个正常的字符了。
+    # 从/mnt/redis-config/sentinel-registry.conf文件中获取注册的sentinel列表
+    while read -r line; do
+      log "sentinel name in sentinel-registry.conf: ${line}"
+      result=$(echo "${line}" | grep "sentinelName")
+      if [[ "${result}" == "" ]]; then
+        log "invalid sentinel name ${result}, skip this sentinel"
+        # 不包含 sentinelName的为无效数据，跳过
+        continue
+      fi
+
+      # 如果是有效数据，那么取到sentinel名称
+      sentinel_name=$(echo "${line}" | awk -F ':' '{ print $2 }')
+      if [ -z "${sentinel_name}" ]; then
+          log "sentinel_name ${sentinel_name} is empty, skip this sentinel"
+          continue
+      fi
+
+      # 从当前master中获取所有的主节点信息
+      sentinel_masters=$(redis-cli -h "${sentinel_name}-read" -p "26379" sentinel masters)
+      if [ -z "${sentinel_masters}" ]; then
+          log "sentinel ${sentinel_name} masters is empty, skip this sentinel"
+          continue
+      fi
+
+      # 当用到sed不同的编辑命令时候，用{}且不同编辑命令之间用分号分隔
+      # n 从另一个文件中读文本下一行，并从下一条命令而不是第一条命令开始对其的处理
+      # 打印匹配行（和-n选项一起合用）
+      # < 锚点词首----相当于 \b，用法格式：<pattern
+      # > 锚点词尾，用法格式： >pattern
+      # xargs 可以将单行或多行文本输入转换为其他格式，例如多行变单行，单行变多行。
+      # xargs 默认的命令是 echo，这意味着通过管道传递给 xargs 的输入将会包含换行和空白，不过通过 xargs 的处理，换行和空白将被空格取代。
+      master_names=$(echo "$sentinel_masters" | sed -n '/\<name\>/{n;p}' | xargs)
+      master_num=$(echo "$master_names" | awk -F " " '{print NF}')
+      master_ips=$(echo "$sentinel_masters" | sed -n '/\<ip\>/{n;p}' | xargs)
+      for ((i = 0, k = 1; i < master_num; i++, k++)); do
+        master_name_arr[$i]=$(echo "$master_names" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+        master_ip_arr[$i]=$(echo "$master_ips" | awk -F " " '{print $"'$k'"}' | sed 's/[ \t]*//g')
+      done
+
+      log "master_name_arr: ${master_name_arr[*]}"
+      log "master_ip_arr: ${master_ip_arr[*]}"
+
+      for ((m = 0; m < master_num; m++)); do
+        master_name=${master_name_arr[$m]}
+        master_ip=${master_ip_arr[$m]}
+        log "register master ${master_ip} sentinel:${sentinel_name} shardname:${master_name}"
+        # 将主节点ip和名称录入到 redis-infrastructure 这个实例上
+        # key=master_ip
+        # value={"sentinel":"sentinel-alpha", "shardname":"redis-alpha"}
+        hset_result=$(redis-cli -h "${INFRASTRUCTURE_MASTER_IP}" -p "${INFRASTRUCTURE_MASTER_PORT}" hset "${master_ip}" "sentinel" "${sentinel_name}" "shardname" "${master_name}")
+        expire_result=$(redis-cli -h "${INFRASTRUCTURE_MASTER_IP}" -p "${INFRASTRUCTURE_MASTER_PORT}" expire "${master_ip}" "${EXPIRE_SECONDS}")
+        log "hset_result: ${hset_result} expire_result:${expire_result}"
+      done
+      log "sentinel ${sentinel_name} masters register all done"
+    done <"${SENTINEL_REGISTRY_CONF}"

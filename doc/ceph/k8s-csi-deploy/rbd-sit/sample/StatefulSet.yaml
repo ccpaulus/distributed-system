@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csi-rbd-demo1
+  namespace: ceph
+spec:
+  selector:
+    matchLabels:
+      app: csi-rbd-demo1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: csi-rbd-demo1
+    spec:
+      containers:
+        - name: csi-rbd-demo-busybox
+          image: xgharborsit01.sncloud.com/sncloud/busybox:latest
+          command: [ "sleep", "60000" ]
+          volumeMounts:
+            - name: csi-rbd-vol
+              mountPath: /mnt/csi-rbd-vol/busybox
+              readOnly: false
+  volumeClaimTemplates:
+    - metadata:
+        name: csi-rbd-vol
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: csi-rbd-sc
+        resources:
+          requests:
+            storage: 1Gi

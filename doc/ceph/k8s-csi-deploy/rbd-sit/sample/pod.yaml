@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-rbd-demo-pod
+  namespace: ceph
+spec:
+  containers:
+    - name: csi-rbd-demo-busybox
+      image: xgharborsit01.sncloud.com/sncloud/busybox:latest
+      command: [ "sleep", "60000" ]
+      volumeMounts:
+        - name: csi-rbd-vol
+          mountPath: /mnt/csi-rbd-vol/busybox
+          readOnly: false
+  volumes:
+    - name: csi-rbd-vol
+      persistentVolumeClaim:
+        claimName: rbd-pvc
+        readOnly: false

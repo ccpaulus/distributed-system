@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csi-cephfs-demo1
+  namespace: ceph
+spec:
+  selector:
+    matchLabels:
+      app: csi-cephfs-demo1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: csi-cephfs-demo1
+    spec:
+      containers:
+        - name: csi-cephfs-demo-busybox
+          image: xgharborsit01.sncloud.com/sncloud/busybox:latest
+          command: [ "sleep", "60000" ]
+          volumeMounts:
+            - name: csi-cephfs-vol
+              mountPath: /mnt/csi-cephfs-vol/busybox
+              readOnly: false
+  volumeClaimTemplates:
+    - metadata:
+        name: csi-cephfs-vol
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: csi-cephfs-sc
+        resources:
+          requests:
+            storage: 1Gi

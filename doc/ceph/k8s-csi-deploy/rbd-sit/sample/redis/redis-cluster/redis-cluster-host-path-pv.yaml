@@ -1,0 +1,162 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv1
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv1
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-leader-ceph-rediscluster-leader-0
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076194
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv2
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv2
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-leader-ceph-rediscluster-leader-1
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076195
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv3
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv3
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-leader-ceph-rediscluster-leader-2
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076194
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv4
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv4
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-follower-ceph-rediscluster-follower-0
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076194
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv5
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv5
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-follower-ceph-rediscluster-follower-1
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076195
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-ceph-pv6
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data/redis/redis-ceph-pv6
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: ceph-rediscluster-follower-ceph-rediscluster-follower-2
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076194

@@ -1,0 +1,63 @@
+---
+apiVersion: redis.redis.opstreelabs.in/v1beta1
+kind: RedisCluster
+metadata:
+  name: ceph-rediscluster
+  namespace: ceph-redis-cluster
+spec:
+  clusterSize: 3
+  kubernetesConfig:
+    image: xgharbor01.sncloud.com/redis/redis:v6.2.5
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+  redisExporter:
+    enabled: true
+    image: xgharbor01.sncloud.com/redis/redis-exporter:1.0
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 1Gi
+  redisLeader:
+    redisConfig:
+      additionalRedisConfig: redis-cluster-cm
+#    affinity:
+#      podAntiAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#                - key: app
+#                  operator: In
+#                  values:
+#                    - redis-cluster-leader
+#            topologyKey: "kubernetes.io/hostname"
+  redisFollower:
+    redisConfig:
+      additionalRedisConfig: redis-cluster-cm
+#    affinity:
+#      podAntiAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#                - key: app
+#                  operator: In
+#                  values:
+#                    - redis-cluster-follower
+#            topologyKey: "kubernetes.io/hostname"
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: local-storage
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

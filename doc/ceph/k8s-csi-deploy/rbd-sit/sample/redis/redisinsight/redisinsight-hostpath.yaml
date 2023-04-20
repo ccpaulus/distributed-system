@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redisinsight-statefulset
+  namespace: ceph-redis-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redisinsight-pod
+  template:
+    metadata:
+      labels:
+        app: redisinsight-pod
+    spec:
+      containers:
+        - name: redisinsight-container
+          image: xgharbor01.sncloud.com/itaas/redisinsight:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: redisinsight-pvc
+              mountPath: /db
+              subPath: redis/redisinsight-pv
+          ports:
+            - containerPort: 8001
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: redisinsight-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: local-storage
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redisinsight-service
+  namespace: ceph-redis-cluster
+  labels:
+    appid: redisinsight
+spec:
+  selector:
+    app: redisinsight-pod
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redisinsight-ingress
+  namespace: ceph-redis-cluster
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: redisinsight.ceph.sncloud.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: redisinsight-service
+                port:
+                  number: 80

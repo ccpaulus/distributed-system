@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redisinsight-pv
+spec:
+  capacity:
+    storage: 1Gi # 按需改
+  hostPath:
+    path: /var/lib/data
+    type: DirectoryOrCreate
+  accessModes:
+    - ReadWriteOnce
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: ceph-redis-cluster
+    name: redisinsight-pvc-redisinsight-statefulset-0
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - host10237076194

@@ -1,0 +1,197 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ceph-redis
+  labels:
+    shardName: ceph-redis
+    app: redis
+  namespace: ceph-redis # 适配性修改可能 修改为目标命名空间
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    shardName: ceph-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ceph-redis-read
+  labels:
+    shardName: ceph-redis
+    app: redis
+  namespace: ceph-redis # 适配性修改可能 修改为目标命名空间
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    shardName: ceph-redis
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ceph-redis
+  namespace: ceph-redis # 适配性修改可能 修改为目标命名空间
+spec:
+  selector:
+    matchLabels:
+      shardName: ceph-redis
+  serviceName: ceph-redis
+  replicas: 2
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        shardName: ceph-redis
+        app: redis
+    spec:
+#      affinity:
+        #        podAffinity:
+        #          requiredDuringSchedulingIgnoredDuringExecution:
+        #            - labelSelector:
+        #                matchExpressions:
+        #                  - key: security
+        #                    operator: In
+        #                    values:
+        #                      - S1
+        #              topologyKey: topology.kubernetes.io/zone
+        # 节点反亲和性：不要将当前pod调度到已存在【带sentinelName: sentinel-ceph标签的pod】的节点上
+        # 每个k8s节点上都会有kubernetes.io/hostname: node-name这样的标签，以kubernetes.io/hostname作为标签，意思就是按照节点作为拓扑纬度，一个节点会被认为是拓扑中的同一位置
+#        podAntiAffinity:
+#          # okd节点数太少，无法满足，所以暂不使用硬亲和
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            - labelSelector:
+#                matchLabels:
+#                  shardName: ceph-redis # 适配性修改可能 修改为目标集群hostname
+#              topologyKey: kubernetes.io/hostname
+#          preferredDuringSchedulingIgnoredDuringExecution:
+#            - weight: 100
+#              podAffinityTerm:
+#                labelSelector:
+#                  matchExpressions:
+#                    - key: shardName
+#                      operator: In
+#                      values:
+#                        - ceph-redis
+#                topologyKey: kubernetes.io/hostname
+      initContainers:
+        - name: init-redis
+          image: xgharborsit01.sncloud.com/redis/redis:6.2
+          command:
+            - /bin/bash
+          args:
+            - /mnt/redis-config/redis-init.sh
+          env:
+            - name: SENTINEL_SERVICE_HEADLESS
+              value: sentinel-ceph  # 适配性修改可能 修改为当前实例的sentinel
+            - name: SENTINEL_SERVICE_CLUSTERIP
+              value: sentinel-ceph-read.redis
+            - name: SENTINEL_PORT
+              value: "26379"
+          volumeMounts:
+            - name: ceph-redis
+              mountPath: /data
+            - name: redis-config
+              mountPath: /mnt/redis-config
+            - name: pod-info
+              mountPath: /etc/pod-info
+              readOnly: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+      containers:
+        - name: redis
+          image: xgharborsit01.sncloud.com/redis/redis:6.2
+          # 加args只覆盖掉dockerfile中CMD中的内容,让redis-server可以通过redis用户去启动
+          args:
+            - /data/redis.conf
+          env:
+            - name: SENTINEL_SERVICE_HEADLESS
+              value: sentinel-ceph # 适配性修改可能 修改为当前实例的sentinel
+            - name: SENTINEL_SERVICE_CLUSTERIP
+              value: sentinel-ceph-read.redis
+            - name: SENTINEL_PORT
+              value: "26379"
+          ports:
+            - name: redis
+              containerPort: 6379
+          volumeMounts:
+            - name: ceph-redis
+              mountPath: /data
+            - name: redis-config
+              mountPath: /mnt/redis-config
+          resources:
+            requests:
+              cpu: 500m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+#          livenessProbe:
+#            exec:
+#              command: [ "redis-cli", "PING" ]
+#            initialDelaySeconds: 30
+#            periodSeconds: 1
+#            timeoutSeconds: 1
+#            failureThreshold: 120 # pod出问题两分钟以后再重建，让sentinel来得及主从切换，否则如果在sentinel主从切换换之前就启动，那么主上的数据是空的，并且副本数据全部丢失, 存活探针直接重启容器，不会走初始化容器的逻辑，所以考虑是不是把存活探针去掉
+          readinessProbe:
+            exec:
+              command: [ "redis-cli", "PING" ]
+            periodSeconds: 1
+            timeoutSeconds: 1
+            failureThreshold: 10
+          lifecycle:
+            postStart:
+              exec:
+                command: [ "/bin/bash", "/mnt/redis-config/post-start.sh" ]
+            preStop:
+              exec:
+                command: [ "/bin/bash", "/mnt/redis-config/save.sh" ]
+        - name: redis-exporter
+          image: xgharborsit01.sncloud.com/redis/redis_exporter:alpine
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          ports:
+            - containerPort: 9121
+      restartPolicy: Always
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-common
+        - name: pod-info
+          projected:
+            sources:
+              - downwardAPI:
+                  items:
+                    - path: "memory_limit"
+                      resourceFieldRef:
+                        containerName: redis
+                        resource: limits.memory
+  volumeClaimTemplates:
+    - metadata:
+        name: ceph-redis
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: csi-rbd-sc
+        resources:
+          requests:
+            storage: 1Gi

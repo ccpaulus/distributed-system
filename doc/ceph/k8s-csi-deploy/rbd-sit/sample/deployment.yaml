@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csi-rbd-demo2
+  namespace: ceph
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.deployment-ceph-csi-rbd-demo2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        workload.user.cattle.io/workloadselector: apps.deployment-ceph-csi-rbd-demo2
+    spec:
+      affinity: {}
+      containers:
+        - args:
+            - "60000"
+          command:
+            - sleep
+          image: xgharborsit01.sncloud.com/sncloud/busybox:latest
+          imagePullPolicy: Always
+          name: csi-rbd-demo-busybox
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /mnt/csi-rbd-vol/busybox
+              name: csi-rbd-vol
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: csi-rbd-vol
+          persistentVolumeClaim:
+            claimName: csi-rbd-vol

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-cm
+  namespace: ceph-redis-cluster
+data:
+  redis-external.conf: |
+    appendonly no
+    save ""
+    cluster-node-timeout 15000
+    loglevel notice
+    logfile "/data/redis.log"
+    maxmemory 1717986918
+    client-output-buffer-limit replica 100mb 100mb 0
+    # 配置为纯缓存，开启缓存淘汰策略
+    maxmemory-policy allkeys-lru
+    # 样本数为10的时候能够很准确的淘汰掉最久没有使用的键 ，与常规意义上的LRU基本持平
+    maxmemory-samples 10
