@@ -42,11 +42,11 @@ yum install -y openssl openssl-devel
 ### 下载安装 nginx
 ~~~
 # 下载安装包
-wget http://nginx.org/download/nginx-1.0.14.tar.gz
+wget http://nginx.org/download/nginx-1.10.2.tar.gz
 # 解压
-tar zxvf nginx-1.0.14.tar.gz.
+tar zxvf nginx-1.10.2.tar.gz.
 # 进入安装包目录
-cd nginx-1.0.14
+cd nginx-1.10.2
 # configure命令创建一个makefile文件
 # –with-http_stub_status_module 可以用来启用 Nginx 的 NginxStatus 功能，以监控 Nginx 的运行状态。想要了解更多的模块的情况可以通过 ./configure –help 选项查看
 /configure --with-http_stub_status_module --prefix=/usr/local/nginx
@@ -89,13 +89,13 @@ cd /usr/local/nginx/sbin
 ~~~
 
 
-## 2.[nginx配置文件的结构](conf-structure.md)
+## 2.[nginx配置文件的结构](config/conf-structure.md)
 
-## 3.[nginx配置文件解析](conf-detail.md)
+## 3.[nginx配置文件解析](config/conf-detail.md)
 
-## 4.[nginx静态资源](static-resources.md)
+## 4.[nginx静态资源](config/static-resources.md)
 
-## 5.[架构&原理](nginx-architecture.md)
+## 5.[架构&原理](architecture/nginx-architecture.md)
 
-## 6.[nginx HA](nginx-ha.md)
+## 6.[nginx HA](architecture/nginx-ha.md)
 

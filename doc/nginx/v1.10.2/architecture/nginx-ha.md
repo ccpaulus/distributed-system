@@ -2,7 +2,7 @@
 
 采用的是`一主一备`的模式，当主节点Nginx挂掉，备份服务器Nginx立刻跟上，这样就保证了服务的高可用性。
 
-![](images/nginx-ha.png)
+![](../images/nginx-ha.png)
 
 
 ## 步骤
