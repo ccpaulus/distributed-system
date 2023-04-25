@@ -5,7 +5,7 @@
 <br/>官网地址
 https://www.elastic.co/guide/en/elasticsearch/reference/7.8/index.html
 
-## 1、[介绍](what-is-elasticsearch.md)
+## 1、[介绍](architecture/what-is-elasticsearch.md)
 
 ## 2、下载&安装
 
