@@ -39,7 +39,7 @@ NameNode 执行文件系统命名空间操作，如打开、关闭和重命名�
 datanode 负责处理来自文件系统客户端的读写请求。datanode 还根据 NameNode 的指令执行块的创建、删除和复制。
 集群中单个 NameNode 的存在极大地简化了系统架构。NameNode 是所有 HDFS 元数据的仲裁器和存储库。用户数据从不流经 NameNode。
 
-![](../images/hdfs-arch.png)
+![](../../images/hdfs/hdfs-arch.png)
 
 ## 文件系统命名空间(file system namespace)
 
@@ -58,7 +58,7 @@ HDFS的设计目的是在大型集群中跨机器可靠地存储非常大的文�
 ，都是一次写入(`write-once`)，并且在任何时候严格规定单写。
 NameNode做出所有关于块复制的决定。它定期从集群中的每个datanode接收一个Heartbeat和一个Blockreport。接收到Heartbeat表示DataNode工作正常。Blockreport包含一个DataNode上所有block的列表。
 
-![](../images/hdfs-replication.png)
+![](../../images/hdfs/hdfs-replication.png)
 
 * Replica Placement
   <br/>

@@ -15,6 +15,8 @@ HDFS的高可用性特性通过提供在同一集群中以主备配置和热备�
 
 ## 架构
 
+![](../../images/hdfs/hdfs-ha.png)
+
 在典型的HA集群中，两台独立的机器被配置为namenode。在任何时间点，只有一个namenode处于Active状态，而另一个处于Standby状态。
 Active NameNode负责集群中的所有客户端操作，而Standby只是充当从属服务器，维护足够的状态，以便在必要时提供快速故障转移。
 
@@ -58,7 +60,7 @@ NameNode、CheckpointNode或BackupNode。
   <br/>
   [官网说明](https://hadoop.apache.org/docs/r2.8.5/hadoop-project-dist/hadoop-hdfs/HDFSHighAvailabilityWithQJM.html)
 
-  [安装样例](../installation-ha/install-hdfs.md)
+  [安装样例](../../installation-ha/install-hdfs.md)
 
 * 管理员命令
 
@@ -82,6 +84,8 @@ Usage: haadmin
 
 ### ZooKeeper
 
+![](../../images/hdfs/hdfs-zkfc.png)
+
 HDFS自动故障转移的实现依赖于ZooKeeper完成以下工作:
 
 * 故障检测(Failure detection)：集群中的每台NameNode机器在ZooKeeper中维护一个持久会话。如果机器崩溃，ZooKeeper会话将过期，通知另一个NameNode应该触发故障转移。
@@ -104,7 +108,7 @@ ZKFC负责:
 <span style="color:green; ">
 在开始配置自动故障转移之前，应该关闭集群。在集群运行时，不能从手动故障转移设置转换到自动故障转移设置。</span>
 
-### [安装样例](../installation-ha/install-hdfs.md)
+### [安装样例](../../installation-ha/install-hdfs.md)
 
 ### FAQ：
 
