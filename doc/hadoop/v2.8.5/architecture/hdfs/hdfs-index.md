@@ -1,6 +1,6 @@
 # HDFS
 
-[官方文档地址](https://hadoop.apache.org/docs/r2.8.5/)
+[官方文档地址](https://hadoop.apache.org/docs/r2.8.5/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html)
 
 * [Architecture](hdfs-arch.md)
 * [User Guide](https://hadoop.apache.org/docs/r2.8.5/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html)
@@ -49,6 +49,7 @@
   <br/>标记不同介质的存储（读写速度、大小不同），提供用户自行选择使用，哪些用于计算、用于存储
 * Memory Storage Support
   <br/>
-  datanode将内存中的数据异步刷新到磁盘，从而从性能敏感的IO路径中删除昂贵的磁盘IO和校验和计算，这种写被称为`Lazy Persist`
+  数据(量不能太大，根据可用内存，从几GB到几十GB不等)
+  写入datanode管理的堆外内存，堆外内存中的数据异步刷新到磁盘，从而从性能敏感的IO路径中删除昂贵的磁盘IO和校验和计算，这种写被称为`Lazy Persist`
   写。
   
