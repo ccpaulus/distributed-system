@@ -3,7 +3,7 @@
 CGroups 是Linux内核提供的一种可以限制单个进程或者多个进程所使用资源的机制。从YARN的角度来看，这可以限制container的资源使用。
 CPU使用就是一个很好的例子。如果没有CGroups，就很难限制 container的CPU使用。当前版本，CGroups仅用于限制CPU使用。
 
-[Linux CGroups](../../../../linux/cgroup.md)
+[Linux CGroups](../../../../linux/cgroups.md)
 
 ## CGroups配置
 
