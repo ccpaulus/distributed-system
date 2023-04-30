@@ -6,8 +6,8 @@
 * [Commands Reference](https://hadoop.apache.org/docs/r2.8.5/hadoop-yarn/hadoop-yarn-site/YarnCommands.html)
 * [Capacity Scheduler](capacity-scheduler.md)
 * [Fair Scheduler](fair-scheduler.md)
-* [ResourceManager Restart](resourceManger-restart.md)
-* [ResourceManager HA](resourceManager-ha.md)
+* [ResourceManager Restart](resourcemanager-restart.md)
+* [ResourceManager HA](resourcemanager-ha.md)
 * [Node Labels]
 * Web Application Proxy
   <br/>Web应用程序代理是YARN的一部分。默认情况下，它将作为资源管理器(RM)
@@ -19,11 +19,11 @@
 * Writing YARN Applications
   编写代码，使用YarnClient向YARN提交application
 * [YARN Application Security](https://hadoop.apache.org/docs/r2.8.5/hadoop-yarn/hadoop-yarn-site/YarnApplicationSecurity.html)
-* NodeManager
+* [NodeManager](nodemanager.md)
 * Running Applications in Docker Containers
 * DockerContainerExecutor
-* Using CGroups
+* [Using CGroups](yarn-cgroups.md)
 * Secure Containers
 * Registry
-* Reservation System
+* [Reservation System](reservation-system.md)
 

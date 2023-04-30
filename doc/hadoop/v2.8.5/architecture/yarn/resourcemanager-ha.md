@@ -41,7 +41,7 @@
 
 大多数故障转移功能可以使用各种配置属性进行调优。以下是必需的/重要的配置列表。
 更多信息，请参阅yarn-default.xml
-有关设置状态存储的说明，请参见[ResourceManager HA](resourceManager-ha.md)文档。
+有关设置状态存储的说明，请参见[ResourceManager HA](resourcemanager-ha.md)文档。
 
 ### 配置
 
