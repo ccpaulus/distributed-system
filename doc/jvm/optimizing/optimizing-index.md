@@ -13,6 +13,7 @@
 
 * [Java性能概述](performance-overview.md)
 * [JVM概述](jvm-overview.md)
+* [硬件与操作系统](hardware&os.md)
 
 ## 参考资料
 
