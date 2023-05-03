@@ -141,3 +141,4 @@ FifoPolicy、FairSharePolicy(默认)和DominantResourceFairnessPolicy都是内�
 
   当应用程序移动到一个队列时，为了确保公平性，将其现有分配与新队列的分配一起计算，而不是与旧队列的分配一起计算。
   如果将应用程序的资源添加到队列会违反其maxRunningApps或maxResources约束，那么将应用程序移动到队列的尝试将失败。
+

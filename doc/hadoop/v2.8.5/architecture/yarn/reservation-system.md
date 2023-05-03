@@ -2,8 +2,8 @@
 
 ## 概述
 
-YARN的`ReservationSystem`为用户提供了超过(和提前)时间预留资源的能力，以确保重要的生产作业将可预测地运行。
-`ReservationSystem`执行仔细的准入控制，并提供绝对资源数量的保证(而不是集群大小的%)。
+YARN的`ReservationSystem`为用户提供了`随时间预留资源`和`提前预留资源`的能力，以确保重要的生产作业将可预测地运行。
+`ReservationSystem`执行仔细的准入控制，并提供绝对资源数量的保证(而不是集群大小的百分比)。
 `Reservation`既可以是可伸缩的，也可以具有组语义，并且可以具有随时间变化的资源需求。
 `ReservationSystem`是`YARN ResourceManager`的一个组件。
 
@@ -14,7 +14,7 @@ YARN的`ReservationSystem`为用户提供了超过(和提前)时间预留资源�
 参照上图，典型的预订流程如下:
 
 * 步骤0：用户(或代表用户的自动化工具)提交reservation创建请求，并接收包含ReservationId的响应。
-* 步骤1：用户(或代表用户的自动化工具)提交由`Reservation定义语言(RDL)`和从步骤0检索到的ReservationId指定的预订请求。
+* 步骤1：用户(或代表用户的自动化工具)提交由`Reservation定义语言(RDL)`和`从步骤0检索到的ReservationId`指定的`预订请求`。
   这描述了用户在一段时间内对资源的需求(例如，资源的skyline)和时间限制(例如，deadline)。
   这可以通过通常的`Client-to-RM`协议或通过RM的`REST api`以编程方式完成。
   如果使用相同的ReservationId提交预订，并且RDL相同，则不会创建新reservation，但请求是成功的。如果RDL不同，reservation将被拒绝，请求将不成功。
