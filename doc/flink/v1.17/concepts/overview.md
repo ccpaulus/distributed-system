@@ -6,7 +6,7 @@
 
 Flink为开发流/批处理应用程序提供了不同层次的抽象。
 
-![](images/flink-apis.png)
+![](images/overview/flink-apis.png)
 
 * 最低层次的抽象只提供`有状态和及时的流处理`。它通过`Process Function`嵌入到`DataStream API`中。
   它允许用户从一个或多个流中自由处理事件,并提供`一致的容错状态`。此外，用户还可以注册`事件时间`和`处理时间`回调，程序得以实现复杂的计算。
