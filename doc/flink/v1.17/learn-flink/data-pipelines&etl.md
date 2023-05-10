@@ -282,3 +282,124 @@ public static class Deduplicator extends RichFlatMapFunction<Event, Event> {
 
 当`flatMap`方法调用`keyHasBeenSeen.value()`时，Flink的运行时在上下文中查找这段`state`的值以查找key，只有当它为`null`
 时，它才会继续并将事件收集到输出中。在本例中，它还将`keyHasBeenSeen`更新为`true`。
+
+这种访问和更新`key-partitioned state`的机制可能看起来相当神奇，因为在`Deduplicator`的实现中key不是显式可见的。
+当Flink的运行时调用我们的`RichFlatMapFunction`的`open`方法时，没有事件，因此在那一刻上下文中没有key。
+但是当它调用`flatMap`方法时，正在处理的事件的key对于运行时是可用的，并在幕后使用，以确定正在对Flink`state backend`
+的哪个条目进行操作。
+
+当部署到分布式集群时，将会存在这个`Deduplicator`的许多实例，每个实例将负责整个`键空间（keyspace）`的一个不相交的子集。
+因此，当您看到ValueState的单个项时，例如：
+
+~~~
+ValueState<Boolean> keyHasBeenSeen;
+~~~
+
+需要明白的是，这不是仅代表了一个单一的`Boolean`，而是一个分布式的、分片的`key/value`存储。
+
+### Clearing State
+
+上面的例子有一个潜在的问题:如果key空间是无界的，会发生什么?Flink在某个地方为使用的每个不同key存储一个`Boolean`实例。
+如果存在一个有界的键集，那么这将是好的，但是在键集以无界的方式增长的应用程序中，有必要清除不再需要的键的状态。
+这是通过在状态对象上调用clear()来完成的，如：
+
+~~~
+keyHasBeenSeen.clear();
+~~~
+
+例如，您可能希望在给定键一段时间不活动之后执行此操作。当您在事件驱动应用程序一节中学习`ProcessFunctions`
+时，您将看到如何使用`Timers`来做到这一点。
+
+还有一个`State生存时间(TTL)`选项，您可以使用`state descriptor`配置该选项，该`descriptor`指定何时`state`自动清除失效的keys。
+
+### Non-keyed State
+
+在`非键上下文（non-keyed contexts）`中也可以使用`managed state`。这有时被称为`operator state`。
+所涉及的接口有些不同，并且由于`UDF`一般不需要`non-keyed state`，因此这里不进行讨论。此特性最常用于`sources`和`sinks`的实现。
+
+## Connected Streams
+
+有时，可能不会像这样应用预定义的`transformation`：
+
+![](images/data-pipelines&etl/transformation.svg)
+
+而是希望能够通过传入`阈值`、`规则`或`其他参数`来动态地更改`transformation`的某些方面。
+Flink通过`connected streams`模式来支持这一点，其中一个`operator`有两个输入流，就像这样：
+
+![](images/data-pipelines&etl/connected-streams.svg)
+
+`connected streams`也可以用来实现`streaming joins`。
+
+### Example
+
+在本例中，控制流用于指定必须从`streamOfWords`中过滤出来的单词。
+一个名为`ControlFunction`的`RichCoFlatMapFunction`应用于`connected streams`来完成此操作。
+
+~~~
+public static void main(String[] args) throws Exception {
+    StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+    DataStream<String> control = env
+        .fromElements("DROP", "IGNORE")
+        .keyBy(x -> x);
+
+    DataStream<String> streamOfWords = env
+        .fromElements("Apache", "DROP", "Flink", "IGNORE")
+        .keyBy(x -> x);
+  
+    control
+        .connect(streamOfWords)
+        .flatMap(new ControlFunction())
+        .print();
+
+    env.execute();
+}
+~~~
+
+注意，连接的两个流必须以兼容的方式进行`keyed`（分区）。`keyBy`的作用是对流的数据进行分区，当连接了`keyed streams`
+时，它们必须以相同的方式进行分区。
+这确保了两个流中具有`相同key`的所有事件被发送到`相同的实例`。这使得在该key上连接两个流成为可能。
+
+在这个案例中，两个流都是`DataStream<String>`类型的，并且两个流都由`string`作为键值。
+正如您将在下面看到的，这个`RichCoFlatMapFunction `在`keyed state`中存储一个`Boolean`值，这个布尔值由两个流共享。
+
+~~~
+public static class ControlFunction extends RichCoFlatMapFunction<String, String, String> {
+    private ValueState<Boolean> blocked;
+      
+    @Override
+    public void open(Configuration config) {
+        blocked = getRuntimeContext()
+            .getState(new ValueStateDescriptor<>("blocked", Boolean.class));
+    }
+      
+    @Override
+    public void flatMap1(String control_value, Collector<String> out) throws Exception {
+        blocked.update(Boolean.TRUE);
+    }
+      
+    @Override
+    public void flatMap2(String data_value, Collector<String> out) throws Exception {
+        if (blocked.value() == null) {
+            out.collect(data_value);
+        }
+    }
+}
+~~~
+
+`RichCoFlatMapFunction `是`FlatMapFunction`的一种，它可以应用于一对`connected streams`，并且它可以访问`rich function`接口。
+这意味着它可以是有状态的。
+
+`blocked`用于记住在`control流`中提到的`keys`(在本例中是单词)，这些单词将从`streamOfWords流`中过滤出来。
+这是`keyed state`，它在两个流之间共享，这就是为什么两个流必须共享相同的`keyspace`。
+
+`flatMap1`和`flatMap2`由`Flink runtime`调用，`Flink runtime`带有来自两个`connected streams`的元素。
+在我们的例子中，来自`control流`的元素传递给`flatMap1`，来自`streamOfWords流`的元素传递给`flatMap2`。
+这是由使用`control.connect(streamOfWords)`连接两个流的顺序决定的。
+
+重要的是要认识到，您无法控制调用`flatMap1`和`flatMap2`回调的顺序。
+这两个输入流相互竞争，`Flink runtime`将根据从一个流或另一个流中消费事件来做它想做的事情。
+在出现一些对事件进行`计时/排序`的情况时，您可能会发现有必要缓冲处于托管Flink`state`的事件，直到您的应用程序准备好处理它们。
+(注意:如果您真的很渴望，可以通过使用实现`InputSelectable`的自定义`operator`，对双输入`operator`
+消费其输入的顺序施加一些有限的控制)
+
