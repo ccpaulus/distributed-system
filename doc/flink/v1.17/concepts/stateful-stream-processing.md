@@ -38,7 +38,7 @@
 Flink使用`stream replay`和`checkpointing`的组合来实现容错。
 一个`checkpoint`标记了每个输入流的一个`特定点`，这些点伴随着每个`operator`对应的`state`。
 通过恢复`operator`的`state`，并从`checkpoint`的点开始重新回放记录，数据流可以从一个`checkpoint`
-恢复，同时保持`一致性(精准一次处理的语义)`。
+恢复，同时保持`一致性(精确一次处理的语义)`。
 
 Flink在执行过程中通过重新播放记录来处理容错，`恢复时间`取决于`需要重新播放的记录的数量`
 ，数量越多，恢复时间越长，恢复开销就越大；检查点间隔（checkpoint interval）是权衡`容错开销`的一种方法。
