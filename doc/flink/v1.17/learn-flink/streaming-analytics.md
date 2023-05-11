@@ -166,8 +166,8 @@ Flink有几种内置的`window assigners`类型，如下所示
 
 对于如何处理窗口的内容，您有三个基本选项
 
-* 1.作为批处理，使用`ProcessWindowFunction`，该函数将传递一个带有窗口内容的`Iterable`
-* 2.增量地，在每个事件分配给窗口时调用`ReduceFunction`或`AggregateFunction`
+* 1.作为批处理，使用`ProcessWindowFunction`，该函数将被传递一个带有窗口内容的`Iterable`
+* 2.递增地，在每个事件分配给窗口时调用`ReduceFunction`或`AggregateFunction`
 * 3.或者两者的结合，其中`ReduceFunction`或`AggregateFunction`的`预聚合结果`，在窗口被触发时提供给`ProcessWindowFunction`。
 
 下面是`方法1`和`方法3`的例子。每个实现在1分钟事件时间窗口内从每个传感器找到峰值，并产生包含(key, end- window-timestamp,
@@ -207,8 +207,8 @@ public static class MyWastefulMax extends ProcessWindowFunction<
 
 在这个实现中有几点需要注意：
 
-* 所有分配给窗口的事件都必须在键控Flink状态下进行缓冲，直到触发窗口。这可能相当昂贵。
-* 我们的`ProcessWindowFunction`被传递了一个Context对象，它包含了关于窗口的信息。它的界面是这样的
+* 所有分配给窗口的事件都必须在`keyed Flink state`下进行缓冲，直到触发窗口。这可能相当昂贵的。
+* 我们的`ProcessWindowFunction`被传递了一个`Context`对象，这个对象包含了关于窗口的信息。它的接口是这样的：
 
 ~~~
 public abstract class Context implements java.io.Serializable {
@@ -222,9 +222,130 @@ public abstract class Context implements java.io.Serializable {
 }
 ~~~
 
-`windowState`和`globalState`是您可以存储该key的`所有窗口`的每个key、每个window或全局的每个key信息的位置。
-这可能是有用的，例如，如果您想记录有关当前窗口的一些内容，并在处理后续窗口时使用它。
+`windowState`和`globalState`可以用来存储该key的`所有窗口`的`per-key`、`per-window`或`global per-key`信息。
+这可能是有用的，例如，如果您想记录有关`当前窗口`的一些内容，并在处理`后续窗口`时使用它。
 
+#### Incremental Aggregation Example
 
+~~~
+DataStream<SensorReading> input = ...;
 
+input
+    .keyBy(x -> x.key)
+    .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+    .reduce(new MyReducingMax(), new MyWindowFunction());
 
+private static class MyReducingMax implements ReduceFunction<SensorReading> {
+    public SensorReading reduce(SensorReading r1, SensorReading r2) {
+        return r1.value() > r2.value() ? r1 : r2;
+    }
+}
+
+private static class MyWindowFunction extends ProcessWindowFunction<
+    SensorReading, Tuple3<String, Long, SensorReading>, String, TimeWindow> {
+
+    @Override
+    public void process(
+            String key,
+            Context context,
+            Iterable<SensorReading> maxReading,
+            Collector<Tuple3<String, Long, SensorReading>> out) {
+
+        SensorReading max = maxReading.iterator().next();
+        out.collect(Tuple3.of(key, context.window().getEnd(), max));
+    }
+}
+~~~
+
+<span style="color:orange; ">注意，`Iterable<SensorReading>`将只包含一个读数（`MyReducingMax`计算的预聚合最大值）。</span>
+
+### Late Events
+
+默认情况下，当使用`事件时间窗口`时，`延迟的事件`将被`丢弃`。窗口API有两个选项，可以让您对此进行更多的控制。
+
+1.您可以使用一种称为`Side Outputs`的机制，将将要丢弃的事件收集到备用输出流中。这里有一个例子：
+
+~~~
+OutputTag<Event> lateTag = new OutputTag<Event>("late"){};
+
+SingleOutputStreamOperator<Event> result = stream
+    .keyBy(...)
+    .window(...)
+    .sideOutputLateData(lateTag)
+    .process(...);
+  
+DataStream<Event> lateStream = result.getSideOutput(lateTag);
+~~~
+
+2.您还可以指定`允许延迟`的间隔，在此期间，`延迟事件`将继续分配给`适当的窗口`(其`state`将被保留)。
+默认情况下，每个延迟事件将导致再次调用窗口函数(有时称为`late firing`)。
+
+默认情况下，`允许延迟`的时间为`0`。换句话说，`watermark`后面的元素被丢弃(或发送到`side output`)。
+
+例如：
+
+~~~
+stream
+    .keyBy(...)
+    .window(...)
+    .allowedLateness(Time.seconds(10))
+    .process(...);
+~~~
+
+当`允许延迟`的时间大于`0`时，只有那些`延迟到将被丢弃的事件`才会被发送到`side output`(如果`side output`已配置的话)。
+
+### Surprises
+
+Flink的`windowing API`的某些方面可能不像您期望的那样运行。根据`flink-user mailing list`
+里和其他地方经常被问及的问题，这里有一些关于窗口的事实可能会让你感到惊讶。
+
+#### Sliding Windows Make Copies
+
+`Sliding window assigners`可以创建许多窗口对象，并将`每个事件`复制到每个相关的窗口中。
+例如，如果`每15分钟`有一个`24小时长度`的滑动窗口，则每个事件将被复制到`4 * 24 = 96`个窗口中。
+
+#### Time Windows are Aligned to the Epoch
+
+仅仅因为您使用的是`一个小时`的`处理时间窗口`，并在12:05开始运行应用程序，并不意味着第一个窗口将在1:05关闭。第一个窗口将持续55分钟，1点关闭。
+
+但是请注意，滚动和滑动`window assigners`可以接受一个可选的偏移参数，该参数可用于更改窗口的`对齐方式`。
+
+#### Windows Can Follow Windows
+
+例如，这样做是有效的：
+
+~~~
+stream
+    .keyBy(t -> t.key)
+    .window(<window assigner>)
+    .reduce(<reduce function>)
+    .windowAll(<same window assigner>)
+    .reduce(<same reduce function>);
+~~~
+
+您可能期望`Flink runtime`足够聪明，可以为您执行这种并行预聚合(如果您使用的是`ReduceFunction`或`AggregateFunction`)
+，但事实并非如此。
+
+这样做的原因是，时间窗口产生的事件是根据`窗口结束时间`分配时间戳的。
+因此，例如，由`一个小时长的窗口`产生的`所有事件`都将具有标记`一小时结束的时间戳`。
+`任何后续窗口`在消费这些事件时，它的`持续时间`应该与前一个窗口的`相同`，或者是前一个窗口的`倍数`。
+
+#### No Results for Empty TimeWindows
+
+<span style="color:orange; ">
+只有当事件分配给它们时，才会创建窗口。因此，如果在给定的时间范围内没有事件，则不会报告任何结果。</span>
+
+#### Late Events Can Cause Late Merges
+
+`Session windows`是基于可以`merge`的窗口的抽象。<span style="color:orange; ">每个元素最初被分配到一个新窗口</span>
+，之后，只要它们之间的间隙足够小，就合并窗口。
+通过这种方式，`延迟的事件`可以缩小两个先前独立会话之间的差距，从而产生`延迟的合并`。
+
+## Hands-on
+
+本节附带的实践练习是[Hourly Tips Exercise](https://github.com/apache/flink-training/blob/release-1.17//hourly-tips)。
+
+## Further Reading
+
+* [Timely Stream Processing]
+* [Windows]

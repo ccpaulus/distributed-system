@@ -403,3 +403,11 @@ public static class ControlFunction extends RichCoFlatMapFunction<String, String
 (注意:如果您真的很渴望，可以通过使用实现`InputSelectable`的自定义`operator`，对双输入`operator`
 消费其输入的顺序施加一些有限的控制)
 
+## Hands-on
+
+本节附带的实践练习是[Rides and Fares](https://github.com/apache/flink-training/blob/release-1.17//rides-and-fares)。
+
+## Further Reading
+
+* [DataStream Transformations]
+* [Stateful Stream Processing]

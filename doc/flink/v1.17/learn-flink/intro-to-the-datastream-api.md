@@ -170,3 +170,16 @@ DataStream<String> lines = env.readTextFile("file:///path");
 `JobManager`和`TaskManager`日志在调试此类故障时非常有帮助，但是在IDE中进行本地调试要容易得多，这是Flink支持的。
 可以设置断点、检查局部变量和逐步执行代码。还可以进入Flink的代码，如果对Flink的工作原理感到好奇，这是了解其内部更多信息的好方法。
 
+## Hands-on
+
+至此，您已经掌握了足够的知识，可以开始编写代码并运行一个简单的数据流应用程序。
+Clone[flink-training-repo](https://github.com/apache/flink-training/tree/release-1.17/)，
+按照README中的说明进行操作后，执行第一个练习:[Filtering a Stream (Ride Cleansing)](https://github.com/apache/flink-training/blob/release-1.17//ride-cleansing)。
+
+## Further Reading
+
+* [Flink Serialization Tuning Vol. 1: Choosing your Serializer — if you can]
+* [Anatomy of a Flink Program]
+* [Data Sources]
+* [Data Sinks]
+* [DataStream Connectors]
