@@ -49,6 +49,27 @@ $ curl https://flink.apache.org/q/quickstart.sh | bash -s 1.17.0
 
 ### Flink APIs
 
+Flink提供了两个主要的API:` Datastream API`和`Table API & SQL`。它们可以单独使用，也可以混合使用，这取决于您的用例：
+
+| 想要使用的APIs                         | 需要添加的依赖项                          |
+|-----------------------------------|-----------------------------------|
+| DataStream                        | flink-streaming-java              |
+| DataStream with Scala             | flink-streaming-scala_2.12        |
+| Table API                         | flink-table-api-java              |
+| Table API with Scala              | flink-table-api-scala_2.12        |
+| Table API + DataStream            | flink-table-api-java-bridge       |
+| Table API + DataStream with Scala | flink-table-api-scala-bridge_2.12 |
+
+只需将它们包含在构建工具（script/descriptor）中，就可以开始开发你的job了。
+
 ## Running and packaging
 
-## What’s next?
+如果希望通过简单地执行`main class`来运行作业，则需要在`classpath`中添加`link-runtime`。
+对于`Table API`程序，您还需要`flink-table-runtime`和`flink-table-planner-loader`。
+
+根据经验，我们建议将应用程序代码及其所需的所有依赖项打包为一个`fat/uber JAR`。 这包括作业的打包`connectors`、`formats`
+和`第三方依赖项`。
+此规则不适用于`Java APIs`、`DataStream Scala APIs`和前面提到的`运行时模块`
+，这些模块已经由Flink自己提供，不应该包含在`job uber JAR`中。
+这个作业JAR可以提交到`已经运行的Flink集群`，或者添加到`Flink应用程序容器映像`中，而无需修改发行版。
+
