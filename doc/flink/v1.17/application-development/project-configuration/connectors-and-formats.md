@@ -21,6 +21,13 @@ Flink应用程序可以通过`connectors`读取和写入各种外部系统。它
 ## Using artifacts
 
 为了使用`connector`或`format`模块，您可以：
-* Shade`thin JAR` and its transitive dependencies
 
+* Shade`thin JAR` and its transitive dependencies
+* Shade the uber JAR in your job JAR
+* Copy the uber JAR directly in the /lib folder of the Flink distribution
+
+决定是shade`uber JAR`、`thin JAR`，还是仅仅`在发行版中包含依赖`取决于您和您的用例。
+如果您shade依赖项，您将对`作业JAR`中的依赖项版本有更多的控制。
+如果shading`thin JAR`，您将对传递依赖项有更多的控制，因为您可以在不更改`connector`版本的情况下更改版本(允许兼容)。
+如果直接在Flink发行版`/lib`文件夹下嵌入`connector uber JAR`，您将能够在一个地方统一控制`所有作业`的`connector`版本。
 
