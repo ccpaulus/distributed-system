@@ -67,8 +67,8 @@ data.map (new RichMapFunction<String, Integer>() {
 ~~~
 
 除了用户自定义的 function（map，reduce 等），Rich functions 还提供了四个方法：open、close、getRuntimeContext 和
-setRuntimeContext。这些方法对于参数化 function （参阅 给 function 传递参数）， 创建和最终确定本地状态，访问广播变量（参阅
-广播变量），以及访问运行时信息，例如累加器和计数器（参阅 累加器和计数器），以及迭代器的相关信息（参阅 迭代器） 有很大作用。
+setRuntimeContext。这些方法对于参数化 function （参阅 [给 function 传递参数]()）， 创建和最终确定本地状态，访问广播变量（参阅
+广播变量），以及访问运行时信息，例如累加器和计数器（参阅 [累加器和计数器]()），以及迭代器的相关信息（参阅 [迭代器]()） 有很大作用。
 
 ## 累加器和计数器
 
@@ -77,10 +77,14 @@ setRuntimeContext。这些方法对于参数化 function （参阅 给 function 
 最简单的累加器就是**计数器**: 你可以使用 Accumulator.add(V value) 方法将其递增。在作业结束时，Flink
 会汇总（合并）所有部分的结果并将其发送给客户端。 在调试过程中或在你想快速了解有关数据更多信息时,累加器作用很大。
 
-Flink 目前有如下**内置累加器**。每个都实现了 累加器 接口。
+Flink 目前有如下**内置累加器**。每个都实现了 [累加器]() 接口。
 
-* IntCounter , LongCounter 和 DoubleCounter : 有关使用计数器的示例，请参见下文。
-* 直方图 : 离散数量的柱状直方图实现。在内部，它只是整形到整形的映射。你可以使用它来计算值的分布，例如，单词计数程序的每行单词的分布情况。
+* [IntCounter](https://github.com/apache/flink/blob/release-1.17//flink-core/src/main/java/org/apache/flink/api/common/accumulators/IntCounter.java) ,
+  [LongCounter](https://github.com/apache/flink/blob/release-1.17//flink-core/src/main/java/org/apache/flink/api/common/accumulators/LongCounter.java)
+  和 [DoubleCounter](https://github.com/apache/flink/blob/release-1.17//flink-core/src/main/java/org/apache/flink/api/common/accumulators/DoubleCounter.java) :
+  有关使用计数器的示例，请参见下文。
+* [直方图](https://github.com/apache/flink/blob/release-1.17//flink-core/src/main/java/org/apache/flink/api/common/accumulators/Histogram.java) :
+  离散数量的柱状直方图实现。在内部，它只是整形到整形的映射。你可以使用它来计算值的分布，例如，单词计数程序的每行单词的分布情况。
 
 **如何使用累加器：**
 
@@ -111,13 +115,13 @@ myJobExecutionResult.getAccumulatorResult("num-lines");
 单个作业的所有累加器共享一个命名空间。因此你可以在不同的操作 function 里面使用同一个累加器。Flink 会在内部将所有具有相同名称的累加器合并起来。
 
 关于累加器和迭代的注意事项：当前累加器的结果只有在整个作业结束后才可用。我们还计划在下一次迭代中提供上一次的迭代结果。你可以使用
-聚合器 来计算每次迭代的统计信息，并基于此类统计信息来终止迭代。
+[聚合器]() 来计算每次迭代的统计信息，并基于此类统计信息来终止迭代。
 
 **定制累加器：**
 
 要实现自己的累加器，你只需要实现累加器接口即可。如果你认为自定义累加器应随 Flink 一起提供，请尽管创建 pull request。
 
-你可以选择实现 Accumulator 或 SimpleAccumulator 。
+你可以选择实现 [Accumulator]() 或 [SimpleAccumulator]() 。
 
 Accumulator<V,R> 的实现十分灵活: 它定义了将要添加的值类型 V，并定义了最终的结果类型 R。例如，对于直方图，V 是一个数字且 R
 是一个直方图。 SimpleAccumulator 适用于两种类型都相同的情况，例如计数器。
