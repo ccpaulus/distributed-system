@@ -1,0 +1,157 @@
+#安装keepalived：
+
+1:如果已经安装 先删除，因为yum装的是1.3.5版本的亲测半天有vip无法绑定的bug：
+yum remove -y  keepalived
+
+2:add proxy:
+export https_proxy=http://10.243.100.159:8888
+export http_proxy=http://10.243.100.159:8888
+export all_proxy=http://10.243.100.159:8888
+ip route add 10.243.100.159 via 10.237.76.254 dev bond0
+
+3:get new source code and install:
+wget https://www.keepalived.org/software/keepalived-2.2.7.tar.gz  --no-check-certificate
+tar -zxvf keepalived-2.2.7.tar.gz
+cd keepalived-2.2.7/
+./configure
+make
+make install
+
+4:add keepalived service:
+mkdir /etc/keepalived/
+systemctl enable keepalived.service
+
+5:add MASTER config:
+cat << EOF >> /etc/keepalived/keepalived.conf
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   #notification_email_from Alexandre.Cassen@firewall.loc
+   #smtp_server 127.0.0.1
+   #smtp_connect_timeout 30
+   router_id host10237076194                #注意！要改成本主机名！---------------
+   vrrp_skip_check_adv_addr
+   #vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+   default_interface  bond1                #注意！此处指定网卡！---------------
+}
+
+vrrp_script chk_http_port {
+    script "/usr/local/src/check_nginx_pid.sh"
+    interval 2                          #（检测脚本执行的间隔）
+    weight -20
+}
+
+vrrp_instance VI_1 {
+    state MASTER                #注意！此处指定为MASTER！---------------
+    interface bond1                #注意！此处指定网卡！---------------
+    virtual_router_id 108
+    mcast_src_ip 10.237.77.244                #注意！要改成本主机bond IP！---------------
+    priority 100
+    advert_int 1
+    authentication {
+       auth_type PASS
+       auth_pass 1111
+    }
+    track_interface {
+       bond0                #注意！此处指定网卡！---------------
+       bond1                #注意！此处指定网卡！---------------
+    }
+    track_script {
+      chk_http_port
+    }
+    virtual_ipaddress {
+        #10.237.77.248
+        10.237.77.249                #注意！此处指定vip！---------------
+    }
+}
+
+EOF
+
+
+6:add BACKUP config:
+cat << EOF >> /etc/keepalived/keepalived.conf
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   #notification_email_from Alexandre.Cassen@firewall.loc
+   #smtp_server 127.0.0.1
+   #smtp_connect_timeout 30
+   router_id host10237076195                #注意！要改成本主机名！---------------
+   vrrp_skip_check_adv_addr
+   #vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+   default_interface  bond1                #注意！此处指定网卡！---------------
+}
+
+vrrp_script chk_http_port {
+    script "/usr/local/src/check_nginx_pid.sh"
+    interval 2                          #（检测脚本执行的间隔）
+    weight -20
+}
+
+vrrp_instance VI_1 {
+    state BACKUP                #注意！此处指定为BACKUP！---------------
+    interface bond1                #注意！此处指定网卡！---------------
+    virtual_router_id 108
+    mcast_src_ip 10.237.77.245                #注意！要改成本主机bond IP！---------------
+    priority 98                #注意！此处指定为BACKUP需要比MASTER的值小！---------------
+    advert_int 1
+    authentication {
+       auth_type PASS
+       auth_pass 1111
+    }
+    track_interface {
+       bond0                #注意！此处指定网卡！---------------
+       bond1                #注意！此处指定网卡！---------------
+    }
+    track_script {
+      chk_http_port
+    }
+    virtual_ipaddress {
+        #10.237.77.248
+        10.237.77.249               #注意！此处指定vip！---------------
+    }
+}
+
+EOF
+
+
+
+7:add nginx check script:
+$ vim /usr/local/src/check_nginx_pid.sh
+#add:
+#!/bin/bash
+A=`ps -C nginx --no-header |wc -l`
+if [ $A -eq 0 ];then
+        exit 1
+else
+    exit 0
+fi
+
+
+$ chmod +x /usr/local/src/check_nginx_pid.sh
+
+
+8:start keepalived service:
+systemctl restart keepalived.service
+
+
+9:view keepalived log：
+journalctl -u keepalived.service
+
+
+10:vip的bond mac address 查看：
+arping -I bond1 10.237.77.249
