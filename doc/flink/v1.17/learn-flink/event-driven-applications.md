@@ -1,42 +1,42 @@
-# Event-driven Applications
+# 事件驱动应用
 
-## Process Functions
+## 处理函数（Process Functions）
 
-### Introduction
+### 简介
 
-`ProcessFunction`将事件处理与`timers`和`state`相结合，使其成为流式处理应用程序的强大构建块。
-这是使用Flink创建`事件驱动应用程序（event-driven applications）`的基础。它与`RichFlatMapFunction`非常相似，但增加了`timers`。
+ProcessFunction 将事件处理与 Timer，State 结合在一起，使其成为流处理应用的强大构建模块。 这是使用 Flink 创建事件驱动应用程序的基础。它和
+RichFlatMapFunction 十分相似， 但是增加了 Timer。
 
-### Example
+### 示例
 
-如果您在`Streaming Analytics`培训中做过实践练习，您将记得它使用`TumblingEventTimeWindow`
-来计算每个驾驶员在每个小时内的`tips`之和，如下所示：
+如果你已经体验了 [流式分析训练]() 的[动手实践]()， 你应该记得，它是采用 TumblingEventTimeWindow 来计算每个小时内每个司机的小费总和，
+像下面的示例这样：
 
 ~~~
-// compute the sum of the tips per hour for each driver
+// 计算每个司机每小时的小费总和
 DataStream<Tuple3<Long, Long, Float>> hourlyTips = fares
         .keyBy((TaxiFare fare) -> fare.driverId)
         .window(TumblingEventTimeWindows.of(Time.hours(1)))
         .process(new AddTips());
 ~~~
 
-使用`KeyedProcessFunction`做同样的事情相当简单，而且具有教育意义。让我们首先用下面的代码替换上面的代码：
+使用 KeyedProcessFunction 去实现相同的操作更加直接且更有学习意义。 让我们开始用以下代码替换上面的代码：
 
 ~~~
-// compute the sum of the tips per hour for each driver
+// 计算每个司机每小时的小费总和
 DataStream<Tuple3<Long, Long, Float>> hourlyTips = fares
         .keyBy((TaxiFare fare) -> fare.driverId)
         .process(new PseudoWindow(Time.hours(1)));
 ~~~
 
-在这个代码片段中，一个名为`PseudoWindow`的`KeyedProcessFunction`被应用于一个`keyed stream`，
-其结果是一个`DataStream<Tuple3<Long, Long, Float>>`(这与使用Flink内置时间窗口的实现产生的流类型相同)。
+在这个代码片段中，一个名为 PseudoWindow 的 KeyedProcessFunction 被应用于 KeyedStream， 其结果是一个 DataStream<Tuple3<
+Long, Long, Float>> （与使用 Flink 内置时间窗口的实现生成的流相同）。
 
-`PseudoWindow`的大体结构如下：
+PseudoWindow 的总体轮廓示意如下：
 
 ~~~
-// Compute the sum of the tips for each driver in hour-long windows.
-// The keys are driverIds.
+// 在时长跨度为一小时的窗口中计算每个司机的小费总和。
+// 司机ID作为 key。
 public static class PseudoWindow extends 
         KeyedProcessFunction<Long, TaxiFare, Tuple3<Long, Long, Float>> {
 
@@ -47,13 +47,13 @@ public static class PseudoWindow extends
     }
 
     @Override
-    // Called once during initialization.
+    // 在初始化期间调用一次。
     public void open(Configuration conf) {
         . . .
     }
 
     @Override
-    // Called as each fare arrives to be processed.
+    // 每个票价事件（TaxiFare-Event）输入（到达）时调用，以处理输入的票价事件。
     public void processElement(
             TaxiFare fare,
             Context ctx,
@@ -63,7 +63,7 @@ public static class PseudoWindow extends
     }
 
     @Override
-    // Called when the current watermark indicates that a window is now complete.
+    // 当当前水印（watermark）表明窗口现在需要完成的时候调用。
     public void onTimer(long timestamp, 
             OnTimerContext context, 
             Collector<Tuple3<Long, Long, Float>> out) throws Exception {
@@ -73,21 +73,22 @@ public static class PseudoWindow extends
 }
 ~~~
 
-需要注意的事项：
+注意事项：
 
-* `ProcessFunctions`有几种类型，此处是一个`KeyedProcessFunction`
-  ，但也有`CoProcessFunctions`, `BroadcastProcessFunctions`等。
-* `KeyedProcessFunction`是`RichFunction`的一种。作为一个`RichFunction`，它可以访问处理`managed keyed state`所需的`open`
-  和`getRuntimeContext`方法。
-* 有两个回调要实现:`processElement`和`onTimer`。`processElement`在每个传入事件时被调用;`onTimer`当`timers`触发时被调用。
-  `timers`可以是`event time`类型或`processing time`类型。`processElement`和`onTimer`都提供了一个上下文对象，
-  该对象可用于与`TimerService`(以及其他事物)交互。这两个回调函数还传递了一个可用于发出结果的`Collector`。
+* 有几种类型的 ProcessFunctions – 不仅包括 KeyedProcessFunction，还包括 CoProcessFunctions、BroadcastProcessFunctions 等.
 
-#### The open() method
+* KeyedProcessFunction 是一种 RichFunction。作为 RichFunction，它可以访问使用 Managed Keyed State 所需的 open 和
+  getRuntimeContext 方法。
+
+* 有两个回调方法须要实现： processElement 和 onTimer。每个输入事件都会调用 processElement 方法； 当计时器触发时调用
+  onTimer。它们可以是基于事件时间（event time）的 timer，也可以是基于处理时间（processing time）的 timer。 除此之外，processElement
+  和 onTimer 都提供了一个上下文对象，该对象可用于与 TimerService 交互。 这两个回调还传递了一个可用于发出结果的 Collector。
+
+#### open() 方法
 
 ~~~
-// Keyed, managed state, with an entry for each window, keyed by the window's end time.
-// There is a separate MapState object for each driver.
+// 每个窗口都持有托管的 Keyed state 的入口，并且根据窗口的结束时间执行 keyed 策略。
+// 每个司机都有一个单独的MapState对象。
 private transient MapState<Long, Float> sumOfTips;
 
 @Override
@@ -99,11 +100,11 @@ public void open(Configuration conf) {
 }
 ~~~
 
-由于`票价事件`可能无序到达，因此有时需要在完成`计算前一小时的结果`之前处理一个小时的事件。
-实际上，如果`watermarking`延迟比`窗口长度`长得多，那么可能有许多窗口同时打开，而不是只有两个。
-这个实现通过使用`MapState`来支持这一点，`MapState`将`每个窗口结束的时间戳`映射到该窗口的`tips`之和。
+由于票价事件（fare-event）可能会乱序到达，有时需要在计算输出前一个小时结果前，处理下一个小时的事件。
+这样能够保证“乱序造成的延迟数据”得到正确处理（放到前一个小时中）。 实际上，如果 Watermark 延迟比窗口长度长得多，则可能有多个窗口同时打开，而不仅仅是两个。
+此实现通过使用 MapState 来支持处理这一点，该 MapState 将每个窗口的结束时间戳映射到该窗口的小费总和。
 
-#### The processElement() method
+#### processElement() 方法
 
 ~~~
 public void processElement(
@@ -115,15 +116,15 @@ public void processElement(
     TimerService timerService = ctx.timerService();
 
     if (eventTime <= timerService.currentWatermark()) {
-        // This event is late; its window has already been triggered.
+        // 事件延迟；其对应的窗口已经触发。
     } else {
-        // Round up eventTime to the end of the window containing this event.
+        // 将 eventTime 向上取值并将结果赋值到包含当前事件的窗口的末尾时间点。
         long endOfWindow = (eventTime - (eventTime % durationMsec) + durationMsec - 1);
 
-        // Schedule a callback for when the window has been completed.
+        // 在窗口完成时将启用回调
         timerService.registerEventTimeTimer(endOfWindow);
 
-        // Add this fare's tip to the running total for that window.
+        // 将此票价的小费添加到该窗口的总计中。
         Float sum = sumOfTips.get(endOfWindow);
         if (sum == null) {
             sum = 0.0F;
@@ -134,13 +135,15 @@ public void processElement(
 }
 ~~~
 
-需要注意的事项：
+需要考虑的事项：
 
-* 迟到的事件会发生什么?在`watermark`后面的事件(即延迟)正在被丢弃。如果您希望做得更好，请考虑使用`side output`，这将在下一节中进行解释。
-* 本例使用`MapState`，其中`keys`是时间戳，并为相同的时间戳设置`Timer`。
-  这是一个常见的模式；这使得在`timer`触发时查找相关信息变得`简单`和`高效`。
+* 延迟的事件怎么处理？watermark 后面的事件（即延迟的）正在被删除。 如果你想做一些比这更高级的操作，可以考虑使用旁路输出（Side
+  outputs），这将在[下一节]()中解释。
 
-#### The onTimer() method
+* 本例使用一个 MapState，其中 keys 是时间戳（timestamp），并为同一时间戳设置一个 Timer。 这是一种常见的模式；它使得在 Timer
+  触发时查找相关信息变得简单高效。
+
+#### onTimer() 方法
 
 ~~~
 public void onTimer(
@@ -149,7 +152,7 @@ public void onTimer(
         Collector<Tuple3<Long, Long, Float>> out) throws Exception {
 
     long driverId = context.getCurrentKey();
-    // Look up the result for the hour that just ended.
+    // 查找刚结束的一小时结果。
     Float sumOfTips = this.sumOfTips.get(timestamp);
 
     Tuple3<Long, Long, Float> result = Tuple3.of(driverId, timestamp, sumOfTips);
@@ -158,57 +161,58 @@ public void onTimer(
 }
 ~~~
 
-观察结果：
+注意：
 
-* 传递给`onTimer`的`OnTimerContext context`可以用来确定当前`key`。
-* 当`current watermark`达到每小时结束时，`PseudoWindow`被触发，此时调用`onTimer`。这个`onTimer`方法会从`sumOfTips`
-  中删除了相关的条目，这会导致无法容纳延迟事件。这相当于在使用Flink的时间窗口时将`allowedLateness`设置为`0`。
+* 传递给 onTimer 的 OnTimerContext context 可用于确定当前 key。
 
-### Performance Considerations
+* 我们的 pseudo-windows 在当前 Watermark 到达每小时结束时触发，此时调用 onTimer。 这个 onTimer 方法从 sumOfTips
+  中删除相关的条目，这样做的效果是不可能容纳延迟的事件。 这相当于在使用 Flink 的时间窗口时将 allowedLateness 设置为零。
 
-Flink提供了针对`RocksDB`优化的`MapState`和`ListState`类型。
-尽可能地，应该使用这些对象来代替保存某种集合的`ValueState`对象。
-`RocksDB state backend`可以在不经过`(反)序列化`的情况下追加到`ListState`；
-而对于`MapState`，每个`key/value`对是一个单独的`RocksDB对象`，因此`MapState`可以高效地访问和更新。
+### 性能考虑
 
-## Side Outputs
+Flink 提供了为 RocksDB 优化的 MapState 和 ListState 类型。 相对于 ValueState，更建议使用 MapState 和 ListState，因为使用
+RocksDBStateBackend 的情况下， MapState 和 ListState 比 ValueState 性能更好。 RocksDBStateBackend 可以附加到
+ListState，而无需进行（反）序列化， 对于 MapState，每个 key/value 都是一个单独的 RocksDB 对象，因此可以有效地访问和更新
+MapState。
 
-### Introduction
+## 旁路输出（Side Outputs）
 
-有几个很好的理由可以让一个Flink`operator`有多个输出流，如：
+### 简介
 
-* 异常
-* 格式错误的事件
-* 延迟事件
-* 操作警报，例如与外部服务的连接超时
+有几个很好的理由希望从 Flink 算子获得多个输出流，如下报告条目：
 
-`Side outputs`是一种方便的方法。除了错误报告之外，`side outputs`也是实现流的`N路（n-way）`分割的好方法。
+* 异常情况（exceptions）
+* 格式错误的事件（malformed events）
+* 延迟的事件（late events）
+* operator 告警（operational alerts），如与外部服务的连接超时
 
-### Example
+旁路输出（Side outputs）是一种方便的方法。除了错误报告之外，旁路输出也是实现流的 n 路分割的好方法。
 
-现在，您可以对上一节中忽略的后期事件进行处理。
+### 示例
 
-`side output`通道与`OutputTag<T>`相关联。这些`tags`具有与`side output`的`DataStream`类型对应的`泛型类型`，并且它们具有名称。
+现在你可以对上一节中忽略的延迟事件执行某些操作。
+
+Side output channel 与 OutputTag<T> 相关联。这些标记拥有自己的名称，并与对应 DataStream 类型一致。
 
 ~~~
 private static final OutputTag<TaxiFare> lateFares = new OutputTag<TaxiFare>("lateFares") {};
 ~~~
 
-上面显示的静态的`OutputTag<TaxiFare>`，可以在`PseudoWindow`的`processElement`方法中发出延迟事件时，引用`lateFares`：
+上面显示的是一个静态 OutputTag<TaxiFare> ，当在 PseudoWindow 的 processElement 方法中发出延迟事件时，可以引用它：
 
 ~~~
 if (eventTime <= timerService.currentWatermark()) {
-    // This event is late; its window has already been triggered.
+    // 事件延迟，其对应的窗口已经触发。
     ctx.output(lateFares, fare);
 } else {
     . . .
 }
 ~~~
 
-也可以，在作业的`main`方法中，从此`side output`访问流时，引用`lateFares`：
+以及当在作业的 main 中从该旁路输出访问流时：
 
 ~~~
-// compute the sum of the tips per hour for each driver
+// 计算每个司机每小时的小费总和
 SingleOutputStreamOperator hourlyTips = fares
         .keyBy((TaxiFare fare) -> fare.driverId)
         .process(new PseudoWindow(Time.hours(1)));
@@ -216,28 +220,27 @@ SingleOutputStreamOperator hourlyTips = fares
 hourlyTips.getSideOutput(lateFares).print();
 ~~~
 
-或者，您可以使用两个具有相同名称的`OutputTags`来引用相同的`side output`，但是如果您这样做，它们必须具有`相同的类型`。
+或者，可以使用两个同名的 OutputTag 来引用同一个旁路输出，但如果这样做，它们必须具有相同的类型。
 
-## Closing Remarks
+## 结语
 
-在这个例子中，您已经看到了如何使用`ProcessFunction`来重新实现一个简单的时间窗口。
-当然，如果Flink的`内置windowing API`满足了您的需求，那么请务必使用它。
-但是，如果你发现自己正在考虑用Flink的`windows`做一些扭曲的事情，不要害怕滚动你自己的`windows`。
+在本例中，你已经了解了如何使用 ProcessFunction 重新实现一个简单的时间窗口。 当然，如果 Flink 内置的窗口 API
+能够满足你的开发需求，那么一定要优先使用它。 但如果你发现自己在考虑用 Flink 的窗口做些错综复杂的事情，不要害怕自己动手。
 
-此外，`ProcessFunctions`对于计算分析之外的许多其他用例也很有用。下面的`hands-on`练习提供了一个完全不同的例子。
+此外，ProcessFunctions 对于计算分析之外的许多其他用例也很有用。 下面的实践练习提供了一个完全不同的例子。
 
-`ProcessFunctions`的另一个常见用例是过期陈旧的`state`。
-如果您回想一下[Rides and Fares Exercise](https://github.com/apache/flink-training/blob/release-1.17//rides-and-fares)，
-其中使用`RichCoFlatMapFunction`来计算一个简单的`join`，示例解决方案假设`TaxiRides`和`TaxiFares`
-是完美匹配的，即`每个rideId都是一对一的`。
-如果一个事件丢失了，相同`rideId`的另一个事件将永远保留在`state`中。
-这可以通过`KeyedCoProcessFunction`实现，并且可以使用`timer`来检测和清除任何陈旧的`state`。
+ProcessFunctions 的另一个常见用例是清理过时 State。如果你回想一下 [Rides and Fares Exercise]() ， 其中使用
+RichCoFlatMapFunction 来计算简单 Join，那么示例方案假设 TaxiRides 和 TaxiFares 两个事件是严格匹配为一个有效
+数据对（必须同时出现）并且每一组这样的有效数据对都和一个唯一的 rideId 严格对应。如果数据对中的某个 TaxiRides 事件（TaxiFares
+事件） 丢失，则同一 rideId 对应的另一个出现的 TaxiFares 事件（TaxiRides 事件）对应的 State 则永远不会被清理掉。 所以这里可以使用
+KeyedCoProcessFunction 的实现代替它（RichCoFlatMapFunction），并且可以使用计时器来检测和清除任何过时 的 State。
 
-## Hands-on
+## 实践练习
 
-本节附带的实践练习是[Long Ride Alerts Exercise](https://github.com/apache/flink-training/blob/release-1.17//long-ride-alerts)。
+本节的实践练习是 [Long Ride Alerts Exercise]() .
 
-## Further Reading
+## 延伸阅读
 
-* [ProcessFunction]
-* [Side Outputs]
+* [处理函数（ProcessFunction）]()
+* [旁路输出（Side Outputs）]()
+

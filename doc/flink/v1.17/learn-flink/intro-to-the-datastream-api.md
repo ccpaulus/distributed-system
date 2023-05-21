@@ -1,23 +1,23 @@
-# Intro to the DataStream API
+# DataStream API 简介
 
-本培训的重点是广泛地涵盖`DataStream API`，以便您能够开始编写流应用程序。
+该练习的重点是充分全面地了解 DataStream API，以便于编写流式应用入门。
 
-## What can be Streamed?
+## 什么能被转化成流？
 
-Flink的`DataStream API`允许将它们可以`序列化`的任何内容进行流式传输。Flink`自己的序列化器`用于
+Flink 的 Java DataStream API 可以将任何可序列化的对象转化为流。Flink 自带的序列化器有
 
-* 基本类型，如String, Long, Integer, Boolean, Array
-* 复合类型：Tuples（元组）, POJOs 和 Scala case classes
+* 基本类型，即 String、Long、Integer、Boolean、Array
+* 复合类型：Tuples、POJOs 和 Scala case classes
 
-对于其他类型，Flink则退回到使用`Kryo`进行序列化。也可以在Flink中使用其他序列化器。特别是`Avro`，它得到了很好的支持。
+而且 Flink 会交给 Kryo 序列化其他类型。也可以将其他序列化器和 Flink 一起使用。特别是有良好支持的 Avro。
 
-### Java tuples and POJOs
+### Java tuples 和 POJOs
 
-Flink的`原生序列化器`可以有效地操作tuples和POJOs。
+Flink 的原生序列化器可以高效地操作 tuples 和 POJOs
 
 #### Tuples
 
-对于Java, Flink通过`Tuple25`类型定义了自己的Tuple0。
+对于 Java，Flink 自带有 Tuple0 到 Tuple25 类型。
 
 ~~~
 Tuple2<String, Integer> person = Tuple2.of("Fred", 35);
@@ -29,14 +29,14 @@ Integer age = person.f1;
 
 #### POJOs
 
-如果满足以下条件，Flink将数据类型识别为POJO类型(并允许`“by-name`的字段引用)
+如果满足以下条件，Flink 将数据类型识别为 POJO 类型（并允许“按名称”字段引用）：
 
-* class 是`public`且`独立的(没有非静态内部类)`
-* class 有一个`public`的`无参数构造函数`
-* class (以及所有超类)中的所有`non-static`、`non-transient`字段要么是 `public` 的(并且是`非final`的)；
-  要么具有`public`的`getter`和`setter`方法，这些方法遵循`Java bean`对`getter`和`setter`的命名约定。
+* 该类是公有且独立的（没有非静态内部类）
+* 该类有公有的无参构造函数
+* 类（及父类）中所有的所有不被 static、transient 修饰的属性要么是公有的（且不被 final 修饰），要么是包含公有的 getter 和
+  setter 方法，这些方法遵循 Java bean 命名规范。
 
-例：
+示例：
 
 ~~~
 public class Person {
@@ -51,13 +51,20 @@ public class Person {
 Person person = new Person("Fred Flintstone", 35);
 ~~~
 
-### Scala tuples and case classes
+Flink 的序列化器[支持的 POJO 类型数据结构升级]()。
 
-<span style="color:orange;">所有`Flink Scala APIs`都已弃用，并将在未来的Flink版本中删除。</span>
+### Scala tuples 和 case classes
 
-## A Complete Example
+如果你了解 Scala，那一定知道 tuple 和 case class。
 
-本例将关于人的记录流作为输入，并将其过滤到包括`成年人`记录
+All Flink Scala APIs are deprecated and will be removed in a future Flink version. You can still build your application
+in Scala, but you should move to the Java version of either the DataStream and/or Table API.
+
+See [FLIP-265 Deprecate and remove Scala API support]()
+
+## 一个完整的示例
+
+该示例将关于人的记录流作为输入，并且过滤后只包含成年人。
 
 ~~~
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -104,24 +111,24 @@ public class Example {
 }
 ~~~
 
-### Stream execution environment
+### Stream 执行环境
 
-每个Flink应用程序都需要一个执行环境，如本例所示的`env`。流应用程序需要使用`StreamExecutionEnvironment`。
+每个 Flink 应用都需要有执行环境，在该示例中为 env。流式应用需要用到 StreamExecutionEnvironment。
 
-在应用程序中进行的`DataStream API`调用构建了一个附加到`StreamExecutionEnvironment`的作业图。
-当调用`env.execute()`时，此图被打包并发送到`JobManager`, `JobManager`将作业并行化，并将其切片分发给`TaskManagers`执行。
-作业的每个并行切片将在一个`task slot`中执行。
+DataStream API 将你的应用构建为一个 job graph，并附加到 StreamExecutionEnvironment 。当调用 env.execute() 时此 graph
+就被打包并发送到 JobManager 上，后者对作业并行处理并将其子任务分发给 Task Manager 来执行。每个作业的并行子任务将在 task
+slot 中执行。
 
-<span style="color:orange;">注意，如果不调用`execute()`，应用程序将不会运行。</span>
+注意，如果没有调用 execute()，应用就不会运行。
 
 ![](images/intro-to-the-datastream-api/distributed-runtime.svg)
 
-这个分布式运行时取决于您的应用程序是否可序列化。它还要求集群中的每个节点都可以使用所有依赖项。
+此分布式运行时取决于你的应用是否是可序列化的。它还要求所有依赖对集群中的每个节点均可用。
 
-### Basic stream sources
+### 基本的 stream source
 
-上面的示例使用`env.fromElements(...)`构造了一个`DataStream<Person>`。这是将一个简单的流组合在一起用于原型或测试的方便方法。
-在`StreamExecutionEnvironment`上还有一个`fromCollection(Collection)`方法。所以也可以这样做：
+上述示例用 env.fromElements(...) 方法构造 DataStream<Person> 。这样将简单的流放在一起是为了方便用于原型或测试。StreamExecutionEnvironment
+上还有一个 fromCollection(Collection) 方法。因此，你可以这样做：
 
 ~~~
 List<Person> people = new ArrayList<Person>();
@@ -133,53 +140,53 @@ people.add(new Person("Pebbles", 2));
 DataStream<Person> flintstones = env.fromCollection(people);
 ~~~
 
-在原型设计时，另一种方便的将数据放入流的方法是使用`socket`
+另一个获取数据到流中的便捷方法是用 socket
 
 ~~~
-DataStream<String> lines = env.socketTextStream("localhost", 9999);
+DataStream<String> lines = env.socketTextStream("localhost", 9999)
 ~~~
 
-或使用文件
+或读取文件
 
 ~~~
 DataStream<String> lines = env.readTextFile("file:///path");
 ~~~
 
-在实际应用程序中，最常用的`数据源`是那些支持`低延迟`、`高吞吐量`且能`并行读取`的数据源，并结合了高性能和容错的先决条件，
-如`Apache Kafka`、`Kinesis`和`各种文件系统`。`REST APIs`和`数据库`也经常用于充实流数据。
+在真实的应用中，最常用的数据源是那些支持低延迟，高吞吐并行读取以及重复（高性能和容错能力为先决条件）的数据源，例如 Apache
+Kafka，Kinesis 和各种文件系统。REST API 和数据库也经常用于增强流处理的能力（stream enrichment）。
 
-### Basic stream sinks
+### 基本的 stream sink
 
-上面的示例使用adults.print()将其结果打印到`TaskManager`的logs中(在IDE中运行时将出现在IDE的console中)。
-这实际是对流的每个元素调用`toString()`。
+上述示例用 adults.print() 打印其结果到 task manager 的日志中（如果运行在 IDE 中时，将追加到你的 IDE 控制台）。它会对流中的每个元素都调用
+toString() 方法。
 
-输出看起来像这样
+输出看起来类似于
 
 ~~~
 1> Fred: age 35
 2> Wilma: age 35
 ~~~
 
-其中`1>`和`2>`表示哪个`sub-task(即线程)`产生了输出。
+1> 和 2> 指出输出来自哪个 sub-task（即 thread）
 
-在生产中，常用的`sinks`包括`FileSink`、`各种数据库`和几个`pub-sub`系统。
+在生产中，常用的 sink 包括各种数据库和几个 pub-sub 系统。
 
-### Debugging
+### 调试
 
-在生产环境中，应用程序将在远程集群或一组容器中运行。如果失败了，它也会远程失败。
-`JobManager`和`TaskManager`日志在调试此类故障时非常有帮助，但是在IDE中进行本地调试要容易得多，这是Flink支持的。
-可以设置断点、检查局部变量和逐步执行代码。还可以进入Flink的代码，如果对Flink的工作原理感到好奇，这是了解其内部更多信息的好方法。
+在生产中，应用程序将在远程集群或一组容器中运行。如果集群或容器挂了，这就属于远程失败。JobManager 和 TaskManager
+日志对于调试此类故障非常有用，但是更简单的是 Flink 支持在 IDE 内部进行本地调试。你可以设置断点，检查局部变量，并逐行执行代码。如果想了解
+Flink 的工作原理和内部细节，查看 Flink 源码也是非常好的方法。
 
-## Hands-on
+## 动手实践
 
-至此，您已经掌握了足够的知识，可以开始编写代码并运行一个简单的数据流应用程序。
-Clone[flink-training-repo](https://github.com/apache/flink-training/tree/release-1.17/)，
-按照README中的说明进行操作后，执行第一个练习:[Filtering a Stream (Ride Cleansing)](https://github.com/apache/flink-training/blob/release-1.17//ride-cleansing)。
+至此，你已经可以开始编写并运行一个简单的 DataStream 应用了。 克隆 [flink-training-repo]() 并在阅读完 README
+中的指示后，开始尝试第一个练习吧：[Filtering a Stream (Ride Cleansing)]() 。
 
-## Further Reading
+## 更多阅读
 
-* [Flink Serialization Tuning Vol. 1: Choosing your Serializer — if you can]
-* [Anatomy of a Flink Program]
-* [Data Sources]
-* [Data Sinks]
-* [DataStream Connectors]
+* [Flink Serialization Tuning Vol. 1: Choosing your Serializer — if you can]()
+* [Anatomy of a Flink Program]()
+* [Data Sources]()
+* [Data Sinks]()
+* [DataStream Connectors]()
+

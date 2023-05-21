@@ -1,21 +1,23 @@
-# Data Pipelines & ETL
+# 数据管道 & ETL
 
-Apache Flink的一个非常常见的用例是实现`ETL(extract, transform, load)`管道，从一个或多个`sources`获得数据，进行一些`转换`
-或`丰富`操作，然后将结果存储在某个地方。在本节中，我们将了解如何使用Flink的`DataStream API`来实现这类应用程序。
+Apache Flink 的一种常见应用场景是 ETL（抽取、转换、加载）管道任务。从一个或多个数据源获取数据，进行一些转换操作和信息补充，将结果存储起来。在这个教程中，我们将介绍如何使用
+Flink 的 DataStream API 实现这类应用。
 
-请注意，Flink的`Table and SQL APIs`非常适合许多ETL用例。但是，无论您最终是否直接使用`DataStream API`
-，对本文介绍的基础知识有扎实的理解都是有价值的。
+这里注意，Flink 的 [Table 和 SQL API]() 完全可以满足很多 ETL 使用场景。但无论你最终是否直接使用 DataStream
+API，对这里介绍的基本知识有扎实的理解都是有价值的。
 
-## Stateless Transformations
+## 无状态的转换
+
+本节涵盖了 map() 和 flatmap()
+，这两种算子可以用来实现无状态转换的基本操作。本节中的示例建立在你已经熟悉 [flink-training-repo]() 中的出租车行程数据的基础上。
 
 ### map()
 
-在第一个练习中，您过滤了出租车乘坐事件流。在相同的代码库中，有一个`GeoUtils`
-类，它提供了一个静态方法`GeoUtils.mapToGridCell(float lon, float lat)`将位置(经度，纬度)
-映射到一个网格单元，该网格单元指的是大约100 × 100米大小的区域。
+在第一个练习中，你将过滤出租车行程数据中的事件。在同一代码仓库中，有一个 GeoUtils 类，提供了一个静态方法
+GeoUtils.mapToGridCell(float lon, float lat)，它可以将位置坐标（经度，维度）映射到 100x100 米的对应不同区域的网格单元。
 
-现在，让我们通过向每个事件添加startCell和endCell字段来丰富我们的出租车乘车对象流。
-您可以创建一个扩展TaxiRide的EnrichedRide对象，并添加这些字段：
+现在让我们为每个出租车行程时间的数据对象增加 startCell 和 endCell 字段。你可以创建一个继承 TaxiRide 的 EnrichedRide
+类，添加这些字段：
 
 ~~~
 public static class EnrichedRide extends TaxiRide {
@@ -40,7 +42,7 @@ public static class EnrichedRide extends TaxiRide {
 }
 ~~~
 
-然后，您可以创建一个转换流的应用程序
+然后你可以创建一个应用来转换这个流
 
 ~~~
 DataStream<TaxiRide> rides = env.addSource(new TaxiRideSource(...));
@@ -52,7 +54,7 @@ DataStream<EnrichedRide> enrichedNYCRides = rides
 enrichedNYCRides.print();
 ~~~
 
-使用此MapFunction：
+使用这个 MapFunction:
 
 ~~~
 public static class Enrichment implements MapFunction<TaxiRide, EnrichedRide> {
@@ -66,7 +68,8 @@ public static class Enrichment implements MapFunction<TaxiRide, EnrichedRide> {
 
 ### flatmap()
 
-`MapFunction`仅适用于执行一对一的转换：对于每个传入的流元素，map()将发出一个转换后的元素。除此以外，您可能需要使用flatmap()
+MapFunction 只适用于一对一的转换：对每个进入算子的流元素，map() 将仅输出一个转换后的元素。对于除此以外的场景，你将要使用
+flatmap()。
 
 ~~~
 DataStream<TaxiRide> rides = env.addSource(new TaxiRideSource(...));
@@ -77,7 +80,7 @@ DataStream<EnrichedRide> enrichedNYCRides = rides
 enrichedNYCRides.print();
 ~~~
 
-与`FlatMapFunction`一起：
+其中用到的 FlatMapFunction :
 
 ~~~
 public static class NYCEnrichment implements FlatMapFunction<TaxiRide, EnrichedRide> {
@@ -92,48 +95,47 @@ public static class NYCEnrichment implements FlatMapFunction<TaxiRide, EnrichedR
 }
 ~~~
 
-有了这个接口中提供的Collector, `flatmap()`方法可以发出`任意多的流元素`，包括`一个都不发出`。
+使用接口中提供的 Collector ，flatmap() 可以输出你想要的任意数量的元素，也可以一个都不发。
 
 ## Keyed Streams
 
 ### keyBy()
 
-能够围绕流的一个属性划分流通常是非常有用的，这样具有相同属性值的所有事件就可以分组在一起。例如，假设您想要查找从每个网格单元开始的最长出租车行程。
-从SQL查询的角度来看，这意味着使用`startCell`进行某种`GROUP BY`，而在Flink中，这是使用`keyBy(KeySelector)`完成的。
+将一个流根据其中的一些属性来进行分区是十分有用的，这样我们可以使所有具有相同属性的事件分到相同的组里。例如，如果你想找到从每个网格单元出发的最远的出租车行程。按
+SQL 查询的方式来考虑，这意味着要对 startCell 进行 GROUP BY 再排序，在 Flink 中这部分可以用 keyBy(KeySelector) 实现。
 
 ~~~
 rides
-    .flatMap(new NYCEnrichment())
-    .keyBy(enrichedRide -> enrichedRide.startCell);
+.flatMap(new NYCEnrichment())
+.keyBy(enrichedRide -> enrichedRide.startCell)
 ~~~
 
-每个`keyBy`都会引起网络`shuffle`，从而重新划分流。一般来说，这是相当昂贵的，因为它涉及到`网络通信`以及`序列化`和`反序列化`。
+每个 keyBy 会通过 shuffle 来为数据流进行重新分区。总体来说这个开销是很大的，它涉及网络通信、序列化和反序列化。
 
 ![](images/data-pipelines&etl/keyBy.png)
 
-### Keys are computed
+### 通过计算得到键
 
-`KeySelectors`并不局限于从事件中提取`key`。相反，它们可以以想要的任何方式计算键，只要结果键是确定性的，并且具有`hashCode()`
-和`equals()`的有效实现。
-这个限制排除了`生成随机数`或`返回数组或枚举`的`KeySelectors`，但是可以使用`Tuples`或`POJOs`来拥有复合键，只要它们的元素遵循相同的规则。
+KeySelector 不仅限于从事件中抽取键。你也可以按想要的方式计算得到键值，只要最终结果是确定的，并且实现了 hashCode() 和
+equals()。这些限制条件不包括产生随机数或者返回 Arrays 或 Enums 的 KeySelector，但你可以用元组和 POJO 来组成键，只要他们的元素遵循上述条件。
 
-`keys`必须以`确定的方式`生成，因为它们在需要时都会重新计算，而不是附加到流记录上。
+键必须按确定的方式产生，因为它们会在需要的时候被重新计算，而不是一直被带在流记录中。
 
-例如，与其创建一个新的带有`startCell`字段的`EnrichedRide`类，然后把`startCell`作为键
-
-~~~
-keyBy(enrichedRide -> enrichedRide.startCell);
-~~~
-
-相反，可以这样做：
+例如，比起创建一个新的带有 startCell 字段的 EnrichedRide 类，用这个字段作为 key：
 
 ~~~
-keyBy(ride -> GeoUtils.mapToGridCell(ride.startLon, ride.startLat));
+keyBy(enrichedRide -> enrichedRide.startCell)
 ~~~
 
-### Aggregations on Keyed Streams
+我们更倾向于这样做：
 
-这段代码创建了一个新的元组流，其中包含每个乘车结束事件的`startCell`和`持续时间(单位为分钟)`
+~~~
+keyBy(ride -> GeoUtils.mapToGridCell(ride.startLon, ride.startLat))
+~~~
+
+### Keyed Stream 的聚合
+
+以下代码为每个行程结束事件创建了一个新的包含 startCell 和时长（分钟）的元组流：
 
 ~~~
 import org.joda.time.Interval;
@@ -153,10 +155,10 @@ DataStream<Tuple2<Integer, Minutes>> minutesByStartCell = enrichedNYCRides
     });
 ~~~
 
-现在可以生成一个流，其中只包含每个`startCell`所见过的最长的骑行(到该点)。
+现在就可以产生一个流，对每个 startCell 仅包含那些最长行程的数据。
 
-要用作键的字段有多种表示方式。前面看到了一个带有`EnrichedRide POJO`的示例，其中要用作键的字段是用其名称指定的。
-这种情况涉及到`Tuple2`对象，并且使用元组内的索引(从0开始)来指定键。
+有很多种方法表示使用哪个字段作为键。前面使用 EnrichedRide POJO 的例子，用字段名来指定键。而这个使用 Tuple2
+对象的例子中，用字段在元组中的序号（从0开始）来指定键。
 
 ~~~
 minutesByStartCell
@@ -165,7 +167,7 @@ minutesByStartCell
   .print();
 ~~~
 
-现在，每次持续时间达到新的最大值时，输出流都包含每个键的一条记录，如单元格50797所示
+现在每次行程时长达到新的最大值，都会输出一条新记录，例如下面这个对应 50797 网格单元的数据：
 
 ~~~
 ...
@@ -183,51 +185,50 @@ minutesByStartCell
 1> (50797,12M)
 ~~~
 
-### (Implicit) State
+### （隐式的）状态
 
-这是本训练中涉及有状态流的第一个示例。虽然`state`是透明地处理的，但Flink必须跟踪每个不同`key`的最长持续时间。
+这是培训中第一个涉及到有状态流的例子。尽管状态的处理是透明的，Flink 必须跟踪每个不同的键的最大时长。
 
-无论何时在应用程序中涉及到`state`，您都应该考虑状态可能变得有多大。只要`key`空间是无界的，那么Flink需要的状态量也是无界的。
+只要应用中有状态，你就应该考虑状态的大小。如果键值的数量是无限的，那 Flink 的状态需要的空间也同样是无限的。
 
-在处理流时，通常考虑`有限窗口上的聚合`比考虑整个流更有意义。
+在流处理场景中，考虑有限窗口的聚合往往比整个流聚合更有意义。
 
-### reduce() and other aggregators
+### reduce() 和其他聚合算子
 
-上面使用的`maxBy()`只是Flink的`KeyedStreams`上可用的许多聚合函数的一个例子。还有一个更通用的`reduce()`
-函数，可以使用它来实现自定义聚合。
+上面用到的 maxBy() 只是 Flink 中 KeyedStream 上众多聚合函数中的一个。还有一个更通用的 reduce() 函数可以用来实现你的自定义聚合。
 
-## Stateful Transformations
+## 有状态的转换
 
-### Why is Flink Involved in Managing State?
+### Flink 为什么要参与状态管理？
 
-您的应用程序当然能够在不让Flink参与管理`state`的情况下使用`state`，但Flink为其管理的`state`提供了一些引人注目的特性
+在 Flink 不参与管理状态的情况下，你的应用也可以使用状态，但 Flink 为其管理状态提供了一些引人注目的特性：
 
-* local：Flink的`state`保存在处理它的机器的本地，并且可以以内存速度访问
-* durable：Flink的`state`是容错的，即定时自动`checkpoint`，故障时自动恢复
-* vertically scalable：Flink的`state`可以保存在通过添加更多本地磁盘来扩展的`嵌入式RocksDB实例`中
-* horizontally scalable：随着集群的增长和缩小，Flink的`state`会重新分布
-* queryable：可以通过`Queryable state API`从外部查询Flink的`state`
+* `本地性（local）`: Flink 状态是存储在使用它的机器本地的，并且可以以内存访问速度来获取
+* `持久性（durable）`: Flink 状态是容错的，例如，它可以自动按一定的时间间隔产生 checkpoint，并且在任务失败后进行恢复
+* `纵向可扩展性（vertically scalable）`: Flink 状态可以存储在集成的 RocksDB 实例中，这种方式下可以通过增加本地磁盘来扩展空间
+* `横向可扩展性（horizontally scalable）`: Flink 状态可以随着集群的扩缩容重新分布
+* `可查询性（queryable）`: Flink 状态可以通过使用 [状态查询 API]() 从外部进行查询。
 
-在本节中，您将学习如何使用Flink管理`keyed state`的API。
+在本节中你将学习如何使用 Flink 的 API 来管理 keyed state。
 
 ### Rich Functions
 
-至此，您已经看到了Flink的几个`function`接口，包括`FilterFunction`、`MapFunction`和`FlatMapFunction`。这些都是单一抽象方法模式的例子。
+至此，你已经看到了 Flink 的几种函数接口，包括 FilterFunction， MapFunction，和 FlatMapFunction。这些都是单一抽象方法模式。
 
-对于这些接口中的每一个，Flink还提供了一个所谓的`rich`变体，例如`RichFlatMapFunction`，它有一些额外的方法，包括：
+对其中的每一个接口，Flink 同样提供了一个所谓 “rich” 的变体，如 RichFlatMapFunction，其中增加了以下方法，包括：
 
 * open(Configuration c)
 * close()
 * getRuntimeContext()
 
-`open()`在`operator`初始化期间被调用一次。例如，这是加载一些`静态数据`或`打开到外部服务的连接`的机会。
+open() 仅在算子初始化时调用一次。可以用来加载一些静态数据，或者建立外部服务的链接等。
 
-`getRuntimeContext()`可以访问一整套可能有趣的东西的，但最值得注意的是如何创建和访问Flink管理的`state `。
+getRuntimeContext() 为整套潜在有趣的东西提供了一个访问途径，最明显的，它是你创建和访问 Flink 状态的途径。
 
-### An Example with Keyed State
+### 一个使用 Keyed State 的例子
 
-在这个示例中，假设有一个想要删除重复的事件流，这样就只保留每个键的第一个事件。
-下面是一个应用程序，它使用了一个名为`Deduplicator`的`RichFlatMapFunction`
+在这个例子里，想象你有一个要去重的事件数据流，对每个键只保留第一个事件。下面是完成这个功能的应用，使用一个名为 Deduplicator
+的 RichFlatMapFunction ：
 
 ~~~
 private static class Event {
@@ -248,17 +249,16 @@ public static void main(String[] args) throws Exception {
 }
 ~~~
 
-为了实现这一点，`Deduplicator`需要以某种方式记住每个key是否已经存在一个事件。它将使用Flink的`keyed state`接口来实现。
+为了实现这个功能，Deduplicator 需要记录每个键是否已经有了相应的记录。它将通过使用 Flink 的 keyed state 接口来做这件事。
 
-当像这样使用一个`keyed stream`时，Flink将为每一个`managed state`项（item）维护一个`key/value`存储。
+当你使用像这样的 keyed stream 的时候，Flink 会为每个状态中管理的条目维护一个键值存储。
 
-Flink支持几种不同类型的`keyed state`，本例使用最简单的一种，即`ValueState`。这意味着对于每个key，Flink将存储一个对象(
-在本例中是一个Boolean对象)。
+Flink 支持几种不同方式的 keyed state，这个例子使用的是最简单的一个，叫做 ValueState。意思是对于 每个键 ，Flink
+将存储一个单一的对象 —— 在这个例子中，存储的是一个 Boolean 类型的对象。
 
-`Deduplicator`类有两个方法:`open()`和`flatMap()`。open方法通过定义`ValueStateDescriptor<Boolean>`来建立`managed state`
-的使用。
-构造函数的参数为这个`keyed state("keyHasBeenSeen")`项指定一个名称，并提供可用于序列化这些对象的信息(
-在本例中为`Types.BOOLEAN`)。
+我们的 Deduplicator 类有两个方法：open() 和 flatMap()。open() 方法通过定义 ValueStateDescriptor<Boolean>
+建立了管理状态的使用。构造器的参数定义了这个状态的名字（“keyHasBeenSeen”），并且为如何序列化这些对象提供了信息（在这个例子中的
+Types.BOOLEAN）。
 
 ~~~
 public static class Deduplicator extends RichFlatMapFunction<Event, Event> {
@@ -280,60 +280,58 @@ public static class Deduplicator extends RichFlatMapFunction<Event, Event> {
 }
 ~~~
 
-当`flatMap`方法调用`keyHasBeenSeen.value()`时，Flink的运行时在上下文中查找这段`state`的值以查找key，只有当它为`null`
-时，它才会继续并将事件收集到输出中。在本例中，它还将`keyHasBeenSeen`更新为`true`。
+当 flatMap 方法调用 keyHasBeenSeen.value() 时，Flink 会在 当前键的上下文 中检索状态值，只有当状态为 null
+时，才会输出当前事件。这种情况下，它同时也将更新 keyHasBeenSeen 为 true。
 
-这种访问和更新`key-partitioned state`的机制可能看起来相当神奇，因为在`Deduplicator`的实现中key不是显式可见的。
-当Flink的运行时调用我们的`RichFlatMapFunction`的`open`方法时，没有事件，因此在那一刻上下文中没有key。
-但是当它调用`flatMap`方法时，正在处理的事件的key对于运行时是可用的，并在幕后使用，以确定正在对Flink`state backend`
-的哪个条目进行操作。
+这种访问和更新按键分区的状态的机制也许看上去很神奇，因为在 Deduplicator 的实现中，键不是明确可见的。当 Flink 运行时调用
+RichFlatMapFunction 的 open 方法时， 是没有事件的，所以这个时候上下文中不含有任何键。但当它调用 flatMap
+方法，被处理的事件的键在运行时中就是可用的了，并且被用来确定操作哪个 Flink 状态后端的入口。
 
-当部署到分布式集群时，将会存在这个`Deduplicator`的许多实例，每个实例将负责整个`键空间（keyspace）`的一个不相交的子集。
-因此，当您看到ValueState的单个项时，例如：
+部署在分布式集群时，将会有很多 Deduplicator 的实例，每一个实例将负责整个键空间的互斥子集中的一个。所以，当你看到一个单独的
+ValueState，比如
 
 ~~~
 ValueState<Boolean> keyHasBeenSeen;
 ~~~
 
-需要明白的是，这不是仅代表了一个单一的`Boolean`，而是一个分布式的、分片的`key/value`存储。
+要理解这个代表的不仅仅是一个单独的布尔类型变量，而是一个分布式的共享键值存储。
 
-### Clearing State
+### 清理状态
 
-上面的例子有一个潜在的问题:如果key空间是无界的，会发生什么?Flink在某个地方为使用的每个不同key存储一个`Boolean`实例。
-如果存在一个有界的键集，那么这将是好的，但是在键集以无界的方式增长的应用程序中，有必要清除不再需要的键的状态。
-这是通过在状态对象上调用clear()来完成的，如：
+上面例子有一个潜在的问题：当键空间是无界的时候将发生什么？Flink 会对每个使用过的键都存储一个 Boolean
+类型的实例。如果是键是有限的集合还好，但在键无限增长的应用中，清除再也不会使用的状态是很必要的。这通过在状态对象上调用
+clear() 来实现，如下：
 
 ~~~
-keyHasBeenSeen.clear();
+keyHasBeenSeen.clear()
 ~~~
 
-例如，您可能希望在给定键一段时间不活动之后执行此操作。当您在事件驱动应用程序一节中学习`ProcessFunctions`
-时，您将看到如何使用`Timers`来做到这一点。
+对一个给定的键值，你也许想在它一段时间不使用后来做这件事。当学习 ProcessFunction 的相关章节时，你将看到在事件驱动的应用中怎么用定时器来做这个。
 
-还有一个`State生存时间(TTL)`选项，您可以使用`state descriptor`配置该选项，该`descriptor`指定何时`state`自动清除失效的keys。
+也可以选择使用 [状态的过期时间（TTL）]()，为状态描述符配置你想要旧状态自动被清除的时间。
 
 ### Non-keyed State
 
-在`非键上下文（non-keyed contexts）`中也可以使用`managed state`。这有时被称为`operator state`。
-所涉及的接口有些不同，并且由于`UDF`一般不需要`non-keyed state`，因此这里不进行讨论。此特性最常用于`sources`和`sinks`的实现。
+在没有键的上下文中我们也可以使用 Flink 管理的状态。这也被称作 [算子的状态]()。它包含的接口是很不一样的，由于对用户定义的函数来说使用
+non-keyed state 是不太常见的，所以这里就不多介绍了。这个特性最常用于 source 和 sink 的实现。
 
 ## Connected Streams
 
-有时，可能不会像这样应用预定义的`transformation`：
+相比于下面这种预先定义的转换：
 
 ![](images/data-pipelines&etl/transformation.svg)
 
-而是希望能够通过传入`阈值`、`规则`或`其他参数`来动态地更改`transformation`的某些方面。
-Flink通过`connected streams`模式来支持这一点，其中一个`operator`有两个输入流，就像这样：
+有时你想要更灵活地调整转换的某些功能，比如数据流的阈值、规则或者其他参数。Flink 支持这种需求的模式称为 connected streams
+，一个单独的算子有两个输入流。
 
 ![](images/data-pipelines&etl/connected-streams.svg)
 
-`connected streams`也可以用来实现`streaming joins`。
+connected stream 也可以被用来实现流的关联。
 
-### Example
+### 示例
 
-在本例中，控制流用于指定必须从`streamOfWords`中过滤出来的单词。
-一个名为`ControlFunction`的`RichCoFlatMapFunction`应用于`connected streams`来完成此操作。
+在这个例子中，一个控制流是用来指定哪些词需要从 streamOfWords 里过滤掉的。 一个称为 ControlFunction 的
+RichCoFlatMapFunction 作用于连接的流来实现这个功能。
 
 ~~~
 public static void main(String[] args) throws Exception {
@@ -356,12 +354,11 @@ public static void main(String[] args) throws Exception {
 }
 ~~~
 
-注意，连接的两个流必须以兼容的方式进行`keyed`（分区）。`keyBy`的作用是对流的数据进行分区，当连接了`keyed streams`
-时，它们必须以相同的方式进行分区。
-这确保了两个流中具有`相同key`的所有事件被发送到`相同的实例`。这使得在该key上连接两个流成为可能。
+这里注意两个流只有键一致的时候才能连接。 keyBy 的作用是将流数据分区，当 keyed stream
+被连接时，他们必须按相同的方式分区。这样保证了两个流中所有键相同的事件发到同一个实例上。这样也使按键关联两个流成为可能。
 
-在这个案例中，两个流都是`DataStream<String>`类型的，并且两个流都由`string`作为键值。
-正如您将在下面看到的，这个`RichCoFlatMapFunction `在`keyed state`中存储一个`Boolean`值，这个布尔值由两个流共享。
+在这个例子中，两个流都是 DataStream<String> 类型的，并且都将字符串作为键。正如你将在下面看到的，RichCoFlatMapFunction
+在状态中存了一个布尔类型的变量，这个变量被两个流共享。
 
 ~~~
 public static class ControlFunction extends RichCoFlatMapFunction<String, String, String> {
@@ -387,27 +384,25 @@ public static class ControlFunction extends RichCoFlatMapFunction<String, String
 }
 ~~~
 
-`RichCoFlatMapFunction `是`FlatMapFunction`的一种，它可以应用于一对`connected streams`，并且它可以访问`rich function`接口。
-这意味着它可以是有状态的。
+RichCoFlatMapFunction 是一种可以被用于一对连接流的 FlatMapFunction，并且它可以调用 rich function 的接口。这意味着它可以是有状态的。
 
-`blocked`用于记住在`control流`中提到的`keys`(在本例中是单词)，这些单词将从`streamOfWords流`中过滤出来。
-这是`keyed state`，它在两个流之间共享，这就是为什么两个流必须共享相同的`keyspace`。
+布尔变量 blocked 被用于记录在数据流 control 中出现过的键（在这个例子中是单词），并且这些单词从 streamOfWords 过滤掉。这是
+keyed state，并且它是被两个流共享的，这也是为什么两个流必须有相同的键值空间。
 
-`flatMap1`和`flatMap2`由`Flink runtime`调用，`Flink runtime`带有来自两个`connected streams`的元素。
-在我们的例子中，来自`control流`的元素传递给`flatMap1`，来自`streamOfWords流`的元素传递给`flatMap2`。
-这是由使用`control.connect(streamOfWords)`连接两个流的顺序决定的。
+在 Flink 运行时中，flatMap1 和 flatMap2 在连接流有新元素到来时被调用 —— 在我们的例子中，control 流中的元素会进入
+flatMap1，streamOfWords 中的元素会进入 flatMap2。这是由两个流连接的顺序决定的，本例中为 control.connect(streamOfWords)。
 
-重要的是要认识到，您无法控制调用`flatMap1`和`flatMap2`回调的顺序。
-这两个输入流相互竞争，`Flink runtime`将根据从一个流或另一个流中消费事件来做它想做的事情。
-在出现一些对事件进行`计时/排序`的情况时，您可能会发现有必要缓冲处于托管Flink`state`的事件，直到您的应用程序准备好处理它们。
-(注意:如果您真的很渴望，可以通过使用实现`InputSelectable`的自定义`operator`，对双输入`operator`
-消费其输入的顺序施加一些有限的控制)
+认识到你没法控制 flatMap1 和 flatMap2 的调用顺序是很重要的。这两个输入流是相互竞争的关系，Flink
+运行时将根据从一个流或另一个流中消费的事件做它要做的。对于需要保证时间和/或顺序的场景，你会发现在 Flink
+的管理状态中缓存事件一直到它们能够被处理是必须的。（注意：如果你真的迫切需要，可以使用自定义的算子实现 [InputSelectable]()
+接口，在两输入算子消费它的输入流时增加一些顺序上的限制。）
 
-## Hands-on
+## 动手练习
 
-本节附带的实践练习是[Rides and Fares](https://github.com/apache/flink-training/blob/release-1.17//rides-and-fares)。
+本节的动手练习是 [行程和票价练习]() 。
 
-## Further Reading
+## 延展阅读
 
-* [DataStream Transformations]
-* [Stateful Stream Processing]
+* [数据流转换]()
+* [有状态流的处理]()
+
