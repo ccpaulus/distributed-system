@@ -28,7 +28,7 @@
 
 <span style="color:orange; ">总结：`Keyed state`和相应的`streams`，会根据`key`做一次分区（partitioning）操作</span>
 
-![](images/stateful/keyed-state.png)
+![](images/stateful/state_partitioning.svg)
 
 `Keyed state`被进一步组织成所谓的`Key Groups`。`Key Groups`是由Flink可以重新分配`Keyed State`的原子单元。
 `Key Groups`的数量决定了`最大并行度`。在执行时，一个`keyed operator`的每个并行实例都与一个或多个`Key Groups`一起工作。
@@ -80,7 +80,7 @@ Flink的`分布式snapshotting`中的一个核心元素是`stream barriers`。
 每个`barrier`都携带着`snapshot ID`，`snapshot`将记录推动到自己的前面。`barrier`不会中断流，因此非常轻量级。
 来自不同`snapshot`的`barrier`可以同时存在于流中，这意味着不同的`snapshot`可能同时发生。
 
-![](images/stateful/barrier.png)
+![](images/stateful/stream_barriers.svg)
 
 `Stream barriers`被注入到`流源（stream sources）`的并行数据流中。
 `snapshot n`的`barriers`被注入到的`点(我们称它为Sn)`是源流中`snapshot`涵盖数据的位置。
@@ -94,7 +94,7 @@ Flink的`分布式snapshotting`中的一个核心元素是`stream barriers`。
 
 一旦`snapshot n`完成，任务将再也不会向源请求`Sn之前的记录`，因为此时，Sn之前的记录(及其`后代记录`)已经通过了整个数据流拓扑，即已经完成流式处理。
 
-![](images/stateful/barrier-detail.png)
+![](images/stateful/stream_aligning.svg)
 
 接收多个输入流的`operator`需要将输入流对齐到`snapshot barriers`。上图说明了这一点:
 
@@ -120,7 +120,7 @@ Flink的`分布式snapshotting`中的一个核心元素是`stream barriers`。
 * 每个并行流的数据源在启动快照时的流中的`偏移/位置（offset/position）`。
 * 每个`operator`的一个指向`state`的指针，作为`snapshot`的一部分存储。
 
-![](images/stateful/snapshotting-operator-state.svg)
+![](images/stateful/checkpointing.svg)
 
 #### Recovery
 
@@ -139,7 +139,7 @@ Flink的`分布式snapshotting`中的一个核心元素是`stream barriers`。
 但Flink依旧在源中插入`barrier`，以避免`checkpoint coordinator`超载。
 </span>
 
-![](images/stateful/unaligned-checkpointing.png)
+![](images/stateful/stream_unaligning.svg)
 
 上图描述了`operator`如何处理`unaligned checkpoint barriers`:
 
@@ -167,7 +167,7 @@ Flink的`分布式snapshotting`中的一个核心元素是`stream barriers`。
 存储为`checkpoint`一部分的逻辑。
 `state backend`可以在不更改应用程序逻辑的情况下进行配置。
 
-![](images/stateful/state-backends.png)
+![](images/stateful/checkpoints.svg)
 
 ### Savepoints
 

@@ -21,7 +21,7 @@
   <br/><span style="color:orange; ">请注意，有时当事件时间程序实时处理实时数据时，它们将使用一些处理时间操作，以确保它们及时地进行处理。
   </span>
 
-![](images/timely/notions-of-time.png)
+![](images/timely/event_processing_time.svg)
 
 ## Event Time and Watermarks
 
@@ -40,13 +40,13 @@ Flink中测量事件时间进展的机制是`watermarks`。`watermarks`作为数
 下图显示了带有(逻辑)时间戳和内联`watermarks`的事件流。在本例中，事件是按顺序排列的(相对于它们的时间戳)
 ，这意味着`watermarks`只是流中的周期性标记。
 
-![](images/timely/steam-in-order.png)
+![](images/timely/stream_watermark_in_order.svg)
 
 `Watermarks`对于`乱序流`是至关重要的，如下图所示，其中事件不是按时间戳排序的。
 一般来说，`watermark`是一种声明，声明到流中的那个点，在某个时间戳之前的所有事件都应该已经到达。
 一旦`watermark`到达一个`operator`，`operator`可以将其内部事件时钟提前到`watermark`的值。
 
-![](images/timely/stream-out-of-order.png)
+![](images/timely/stream_watermark_out_of_order.svg)
 
 <span style="color:orange; ">请注意，事件时间由新创建的`流元素(或多个元素)`
 继承，这些元素要么来自`产生它们的事件`，要么来自`触发这些元素创建的 watermark`。</span>
@@ -64,7 +64,7 @@ Flink中测量事件时间进展的机制是`watermarks`。`watermarks`作为数
 
 下图显示了在并行流中流动的事件和`watermarks`的示例，以及跟踪事件时间的`operators`。
 
-![](images/timely/watermarks-in-parallel-streams.svg)
+![](images/timely/parallel_streams_watermarks.svg)
 
 ## Lateness
 
