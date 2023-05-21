@@ -73,3 +73,11 @@ Flink提供了两个主要的API:` Datastream API`和`Table API & SQL`。它们�
 ，这些模块已经由Flink自己提供，不应该包含在`job uber JAR`中。
 这个作业JAR可以提交到`已经运行的Flink集群`，或者添加到`Flink应用程序容器映像`中，而无需修改发行版。
 
+## 下一步是什么？
+
+* 要开发你的作业，请查阅 DataStream API 和 Table API & SQL；
+* 关于如何使用特定的构建工具打包你的作业的更多细节，请查阅如下指南：
+    * Maven
+    * Gradle
+* 关于项目配置的高级内容，请查阅高级主题部分。
+
