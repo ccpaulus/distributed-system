@@ -1,7 +1,7 @@
 # YARN架构
 
-YARN的基本思想是将资源管理和作业调度/监视的功能拆分为单独的守护进程。这个想法是有一个全局的`ResourceManager (RM)`
-和每个应用的`ApplicationMaster (AM)`。应用程序可以是单个作业，也可以是作业DAG。
+YARN 的基本思想是将`资源管理`和`作业调度/监视`的功能拆分为单独的守护进程。按照此思想，YARN
+有一个全局的`ResourceManager (RM)`和每个应用的`ApplicationMaster (AM)`。应用程序可以是`单个作业`，也可以是`作业 DAG`。
 
 `ResourceManager`和`NodeManager`组成数据计算框架。`ResourceManager`
 是在系统中所有应用程序之间仲裁资源的最终权威机构。`NodeManager`是每台机器的框架代理，负责容器，监控它们的资源使用情况(
