@@ -31,7 +31,10 @@
 
 ## 文档
 
-* [What is Apache Flink?](what-is-flink.md)
+* What is Apache Flink?
+    * [Architecture](what-is-apache-flink/architecture.md)
+    * [Applications](what-is-apache-flink/applications.md)
+    * [Operations](what-is-apache-flink/operations.md)
 * [What is Stateful Functions?](what-is-stateful-functions.md)
 * [What is Flink ML?](what-is-flink-ml.md)
 * [What is the Flink Kubernetes Operator?](what-is-the-flink-kubernetes-operator.md)

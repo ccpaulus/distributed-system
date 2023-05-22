@@ -11,7 +11,7 @@
 
 ## 架构
 
-![](images/flink-table-store.png)
+![](images/what-is-flink-table-store/architecture.png)
 
 * 读/写：表存储支持一种通用的方式来读/写数据和执行OLAP查询。
     * 对于读，它支持消费数据

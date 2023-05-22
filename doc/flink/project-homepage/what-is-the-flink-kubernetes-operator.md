@@ -9,7 +9,7 @@
 * 集成了完整的日志记录和度量（metrics）
 * 使用Kubernetes工具，灵活地将 deployments 和`k8s原生环境`进行集成
 
-![](images/flink-k8s-operator.png)
+![](images/what-is-the-flink-kubernetes-operator/overview.svg)
 
 ## 概述
 

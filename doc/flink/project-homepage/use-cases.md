@@ -15,7 +15,7 @@ Flink已被证明可以扩展到`数千个核心`和`TB级的应用程序状态`
 内存或磁盘中)数据访问。通过定期将检查点写入远程持久存储来实现容错。
 
 下图描述了传统应用程序体系结构与事件驱动应用程序之间的区别
-![](images/event-driven-app.png)
+![](images/use-cases/usecases-eventdrivenapps.png)
 
 ### 事件驱动应用程序的优点：
 
@@ -35,11 +35,11 @@ Flink对`事件时间`、`高度可定制的窗口逻辑`以及`由ProcessFuncti
 
 ### 典型的事件驱动应用程序
 
-* 欺诈检测
-* 异常检测
-* 基于规则的提醒
-* 业务流程监控
-* Web应用程序(社交网络)
+* [欺诈检测]()
+* [异常检测]()
+* [基于规则的提醒]()
+* [业务流程监控]()
+* [Web应用程序(社交网络)]()
 
 ## 2.数据分析应用程序（Data Analytics Applications）
 
@@ -50,7 +50,7 @@ Flink对`事件时间`、`高度可定制的窗口逻辑`以及`由ProcessFuncti
 结果要么写入外部数据库，要么作为内部状态维护。仪表板（Dashboard）应用程序可以从外部数据库读取最新的结果，也可以直接查询应用程序的`内部状态`。
 
 Apache Flink支持流和批处理分析应用程序，如下图所示
-![](images/data-analytics-app.png)
+![](images/use-cases/usecases-analytics.png)
 
 ### 流式分析应用程序的优势
 
@@ -68,9 +68,9 @@ SQL查询计算相同的结果，无论它们是运行在记录事件的静态�
 
 ### 典型的数据分析应用程序
 
-* 电信网络质量监测
-* 移动应用产品更新分析及实验评估
-* 消费者技术中实时数据的Ad-hoc分析
+* [电信网络质量监测]()
+* 移动应用产品[更新分析及实验评估]()
+* 消费者技术中[实时数据的Ad-hoc分析]()
 * 大规模图分析
 
 ## 3.数据管道应用（Data Pipeline Applications）
@@ -83,7 +83,7 @@ SQL查询计算相同的结果，无论它们是运行在记录事件的静态�
 例如，`数据管道`可以监视文件系统目录中的新文件，并将其数据写入事件日志。也可以将事件流具体化到数据库，或者增量地构建和优化搜索索引。
 
 下图描述了周期性ETL作业和连续数据管道之间的区别
-![](images/data-pipeline-app.png)
+![](images/use-cases/usecases-datapipelines.png)
 
 ### 数据管道的优势
 
@@ -99,6 +99,6 @@ Flink提供了一组丰富的连接器到各种存储系统，如Kafka、Kinesis
 
 ### 典型的数据管道应用程序
 
-* 电子商务中实时搜索索引的建立
-* 电子商务中的持续ETL
+* 电子商务中[实时搜索索引的建立](https://www.ververica.com/blog/blink-flink-alibaba-search)
+* 电子商务中的[持续ETL](https://engineering.zalando.com/posts/2016/03/apache-showdown-flink-vs.-spark.html)
 
