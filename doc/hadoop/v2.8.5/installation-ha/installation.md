@@ -26,7 +26,7 @@ https://hadoop.apache.org/docs/
 
 ### 3.[系统环境设置](env.md)
 
-### 4.[Zookeeper安装&配置](install-zookeeper.md)
+### 4.[Zookeeper安装&配置](../../../zookeeper/v3.5.9/install-zookeeper.md)
 
 ### 4.[HDFS安装&配置](install-hdfs.md)
 
