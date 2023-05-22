@@ -42,7 +42,7 @@ zookeeper 的事务日志为`二进制文件`，不能通过`vim`等工具直接
 中，然后执行如下命令：
 
 ~~~
-java -classpath .:slf4j-api-1.6.1.jar:zookeeper-3.4.9.jar org.apache.zookeeper.server.LogFormatter /data/cloudytrace/clickhouse-zookeeper/zklogs/version-2/log.30cac1e33d
+java -classpath .:slf4j-api-1.7.25.jar:zookeeper-3.5.9.jar org.apache.zookeeper.server.LogFormatter /data/cloudytrace/clickhouse-zookeeper/zklogs/version-2/log.30cac1e33d
 ~~~
 
 ## zookeeper 的 snapshot
