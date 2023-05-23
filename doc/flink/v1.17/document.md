@@ -14,10 +14,10 @@
     * [Event-driven Applications](learn-flink/event-driven-applications.md)
     * [Fault Tolerance](learn-flink/fault-tolerance.md)
 * Try Flink
-    * [First steps]()
-    * [Fraud Detection with the DataStream API]()
-    * [Real Time Reporting with the Table API]()
-    * [Flink Operations Playground]()
+    * [First steps](try-flink/first-steps.md)
+    * [Fraud Detection with the DataStream API](try-flink/fraud-detection-with-the-datastream-api.md)
+    * [Real Time Reporting with the Table API](try-flink/real-time-reporting-with-the-table-api.md)
+    * [Flink Operations Playground](try-flink/flink-operations-playground.md)
 * Application Development
     * Project Configuration
         * [Overview](application-development/project-configuration/overview.md)
@@ -151,8 +151,8 @@
         * [Configuration](application-development/table-api&sql/configuration.md)
         * [Performance Tuning](application-development/table-api&sql/performance-tuning.md)
         * [User-defined Sources & Sinks](application-development/table-api&sql/user-defined-sources&sinks.md)
-    * [Python API](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/python/overview/)
-    * [DataSet API (Legacy)](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/dataset/overview/)
+    * #[Python API](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/python/overview/)
+    * #[DataSet API (Legacy)](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/dataset/overview/)
 * Libraries
     * [Event Processing (CEP)]()
     * [State Processor API]()
