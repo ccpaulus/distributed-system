@@ -10,23 +10,23 @@
 
 ## Importing the project into your IDE
 
-一旦创建了项目文件夹和文件，我们建议您将该项目导入到IDE中进行开发和测试。
+创建[项目目录和文件]()后，我们建议您将此项目导入到 IDE 进行开发和测试。
 
-`IntelliJ IDEA`支持开箱即用的Maven项目。`Eclipse`提供了`m2e插件`来导入Maven项目。
+IntelliJ IDEA 支持开箱即用的 Maven 项目。Eclipse 提供了 [m2e 插件]() 来 [导入 Maven 项目]()。
 
 <span style="color:orange; ">**_注意_**：对于Flink来说，Java的默认`JVM堆`大小可能太小，您必须手动增加它。在`Eclipse`
 中，选择`Run Configurations -> Arguments`，在`VM Arguments`框中写入:`-xmx800m`。在`IntelliJ IDEA`
-中，建议从`Help | Edit Custom VM Options`菜单中更改`JVM选项`。有关详细信息，
-[请参阅本文](https://intellij-support.jetbrains.com/hc/en-us/articles/206544869-Configuring-JVM-options-and-platform-properties)。
-<br/>**_关于IntelliJ的注意事项_**：要使应用程序在`IntelliJ IDEA`
-中运行，必须在运行配置中勾选`Include dependencies with "Provided" scope`框。如果这个选项不可用(
-可能是由于使用`较旧的IntelliJ IDEA版本`)，那么一个变通方法是创建一个调用应用程序的`main()方法`的测试。
+中，建议从`Help | Edit Custom VM Options`菜单中更改`JVM选项`
+。详情请查阅[本文](https://intellij-support.jetbrains.com/hc/en-us/articles/206544869-Configuring-JVM-options-and-platform-properties)。
+<br/>**_关于IntelliJ的注意事项_**：要使应用程序在 IntelliJ IDEA
+中运行，必须在运行配置中勾选`Include dependencies with "Provided" scope`框。如果这个选项不可用(可能是由于使用较旧的
+IntelliJ IDEA 版本)，那么一个变通方法是创建一个调用应用程序的`main()方法`的测试。
 </span>
 
 ## Building the project
 
 如果您希望`编译/打包`您的项目，需要导航到项目目录并运行`mvn clean package`命令。
-您将找到一个包含您的应用程序的JAR文件（包含您可能作为依赖项添加到应用程序中的`connectors`
+您将 **找到一个 JAR 文件** ，其中包含您的应用程序（还有已作为依赖项添加到应用程序中的`connectors`
 和`库`）：`target/<artifact-id>-<version>.jar`。
 
 <span style="color:orange; ">**_注意_**：如果使用与`DataStreamJob`不同的类作为应用程序的`main class/entry point`
@@ -52,10 +52,11 @@
 
 然后在命令行上执行`mvn install`。
 
-从Java项目模板、Scala项目模板或Gradle创建的项目被配置为，在运行`mvn clean package`时自动将应用程序依赖项包含到应用程序JAR中。
-对于没有从这些模板中设置的项目，我们建议添加`Maven Shade Plugin`来构建包含所有必需依赖项的应用程序jar。
+从 Java Project Template、Scala Project Template 或 Gradle 创建的项目被配置为，在运行`mvn clean package`
+时自动将应用程序依赖项包含到应用程序JAR中。 对于没有从这些模板中设置的项目，我们建议添加`Maven Shade Plugin`
+以将所有必需的依赖项打包进应用程序 jar。
 
-<span style="color:orange; ">**_重要_**:请注意，所有这些`核心API`依赖项都应该将它们的`scope`设置为`provided`。
+<span style="color:orange; ">**_重要_**:请注意，所有这些`核心API`依赖项都应该将它们的`scope`设置为[provided]()。
 这意味着在`compile`时需要它们，但不应该将它们打包到项目的最终应用程序JAR文件中。
 如果没有设置为`provided`，最好的情况是最终的JAR变得过大，因为它包含所有`Flink核心依赖项`。
 最坏的情况是，添加到应用程序JAR文件中的`Flink核心依赖项`与您自己的一些依赖项出现`版本冲突`(
@@ -69,7 +70,7 @@
 ，您不需要创建`uber/fat JAR`或`shade`任何依赖。
 
 如果您想为Flink作业创建一个JAR，并使用Flink发行版中没有内置的外部依赖项。
-您可以将它们添加到发行版的`classpath`中，也可以将它们`shade`到您的`uber/fat JAR`中。
+您可以将它们添加到发行版的`classpath`中，也可以将它们打包进您的`uber/fat JAR`中。
 
 生成的`uber/fat JAR`，可以将其提交到本地或远程集群：
 

@@ -41,9 +41,9 @@ $ curl https://flink.apache.org/q/quickstart.sh | bash -s 1.17.0
 
 要开始处理Flink作业，通常需要以下依赖项：
 
-* Flink APIs，以开发您的job
-* Connectors and formats，以便将您的job与外部系统集成
-* Testing utilities，为了测试你的job
+* Flink APIs，用来开发你的作业
+* [Connectors and formats]()，以将你的作业与外部系统集成
+* [Testing utilities]()，以测试你的作业
 
 除此之外，您可能还需要添加开发自定义`functions`所需的`第三方依赖项`。
 
@@ -64,20 +64,20 @@ Flink提供了两个主要的API:` Datastream API`和`Table API & SQL`。它们�
 
 ## Running and packaging
 
-如果希望通过简单地执行`main class`来运行作业，则需要在`classpath`中添加`link-runtime`。
+如果希望通过简单地执行`main class`来运行作业，则需要在`classpath`中添加`flink-runtime`。
 对于`Table API`程序，您还需要`flink-table-runtime`和`flink-table-planner-loader`。
 
-根据经验，我们建议将应用程序代码及其所需的所有依赖项打包为一个`fat/uber JAR`。 这包括作业的打包`connectors`、`formats`
+根据经验，我们**建议**将应用程序代码及其所需的所有依赖项打包为一个`fat/uber JAR`。 这包括作业的打包`connectors`、`formats`
 和`第三方依赖项`。
-此规则不适用于`Java APIs`、`DataStream Scala APIs`和前面提到的`运行时模块`
-，这些模块已经由Flink自己提供，不应该包含在`job uber JAR`中。
-这个作业JAR可以提交到`已经运行的Flink集群`，或者添加到`Flink应用程序容器映像`中，而无需修改发行版。
+此规则**不适用于**`Java APIs`、`DataStream Scala APIs`和前面提到的`运行时模块`
+，这些模块已经由Flink自己提供，**不应**包含在作业的`uber JAR`中。
+你可以把该作业 JAR 可以提交到`已经运行的Flink集群`，也可以轻松将其添加到`Flink应用程序容器映像`中，而无需修改发行版。
 
 ## 下一步是什么？
 
-* 要开发你的作业，请查阅 DataStream API 和 Table API & SQL；
+* 要开发你的作业，请查阅 [DataStream API]() 和 [Table API & SQL]()；
 * 关于如何使用特定的构建工具打包你的作业的更多细节，请查阅如下指南：
-    * Maven
-    * Gradle
-* 关于项目配置的高级内容，请查阅高级主题部分。
+    * [Maven]()
+    * [Gradle]()
+* 关于项目配置的高级内容，请查阅[高级主题]()部分。
 

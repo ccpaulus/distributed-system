@@ -19,10 +19,10 @@ Flink提供了用于测试作业的工具类，您可以将其添加为依赖项
 </dependency>
 ~~~
 
-在各种测试工具类中，该模块提供了`MiniCluster`，这是一个`轻量级的可配置Flink集群`，可在`JUnit`
-测试中运行，可以`直接执行作业`。
+在各种测试工具类中，该模块提供了`MiniCluster`，这是一个`轻量级的可配置Flink集群`，能在`JUnit`
+测试中运行，可以直接执行作业。
 
-有关如何使用这些工具类的更多信息，请参阅[DataStream API testing]()一节
+有关如何使用这些工具类的更多信息，请参阅[DataStream API testing]()
 
 ## Table API Testing
 
@@ -39,7 +39,7 @@ Flink提供了用于测试作业的工具类，您可以将其添加为依赖项
 
 这将自动引入`query planner`和`runtime`，它们分别用于`规划`和`执行`查询。
 
-<span style="color:orange; ">`Flink 1.15`中开始引入`flink-table-test-utils`模块，该模块是实验性的。</span>
+<span style="color:orange; ">`Flink 1.15`中开始引入`flink-table-test-utils`模块，目前该模块是实验性的。</span>
 
 [Gradle Dependencies for Testing 详见官网文档](https://nightlies.apache.org/flink/flink-docs-release-1.17/docs/dev/configuration/testing/)
 
