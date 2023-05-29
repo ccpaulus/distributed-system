@@ -3,7 +3,7 @@
 ## 数据流模型（Data flow model）
 
 `Flume event`被定义为具有`字节负载`和`一组可选字符串属性`的`数据流单元`。
-`Flume agent`是一个(JVM)进程，它承载着`事件`从`外部源`流向下一个`目的地（hop）`的组件。
+`Flume agent`是一个(JVM)进程，它承载着`事件（event）`从`外部源`流向下一个`目的地（hop）`的组件。
 
 ![](images/UserGuide_image00.png)
 
@@ -50,5 +50,5 @@ Flume 使用 `两个独立的事务` 分别负责 `从 source 到 channel`，以
 。同时还有一个 `memory channel`，它只是将事件存储在内存队列中，这样更快，但是当 agent 进程死亡时，仍然留在 memory channel
 中的任何事件都无法恢复。
 
-Flume 的 KafkaChannel 使用 Apache Kafka 来处理事件。使用 `replicated Kafka topic` 作为 channel 避免磁盘故障时出现事件丢失。
+Flume 的 KafkaChannel 使用 Apache Kafka 来暂存事件。使用 `replicated Kafka topic` 作为 channel 避免磁盘故障时出现事件丢失。
 
