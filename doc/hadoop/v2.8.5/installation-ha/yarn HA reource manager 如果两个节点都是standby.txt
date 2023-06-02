@@ -1,0 +1,10 @@
+题描述：yarn 组件配置reource manager 的HA，如果两个Resource manager 状态 都是standby.
+原因两种：zk 连不上或者创建不了节点 or zk 上面对active的锁被抢掉
+针对锁被抢掉，常见解决方法：
+1：zkclient 检查关于 yarn 的这两项配置
+get /yarn-leader-election/yarn1-cluster/ActiveBreadCrumb
+get /yarn-leader-election/yarn1-cluster/ActiveStandbyElectorLock
+2：删除这两个文件 delete /yarn-leader-election/yarn1-cluster/ActiveStandbyElectorLock
+delete /yarn-leader-election/yarn1-cluster/ActiveBreadCrumb
+3: ZK 自动选举 acrive RM
+4： 确认RM 可以正常工作
