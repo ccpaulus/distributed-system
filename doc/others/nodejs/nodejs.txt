@@ -1,0 +1,39 @@
+#安装nvm（nodejs版本管理工具）
+windows https://github.com/coreybutler/nvm-windows
+unix https://github.com/nvm-sh/nvm
+
+#设置cmd代理
+set http_proxy=http://10.237.124.133:3128
+set https_proxy=http://10.237.124.133:3128
+
+#设置node和npm镜像地址
+nvm node_mirror: https://npmmirror.com/mirrors/node/
+nvm npm_mirror: https://npmmirror.com/mirrors/npm/
+nvm install 10.21.0
+
+#安装yarn（包管理工具）
+【nodejs version < 16】
+npm i -g corepack
+
+【nodejs verion > 16】
+npm install -g yarn
+
+#windows PowerShell权限开启
+set-executionpolicy remotesigned
+
+#设置npm代理
+npm config set proxy http://10.237.124.133:3128
+npm config set https-proxy http://10.237.124.133:3128
+
+或.npmrc文件添加
+registry="http://registry.npmmirror.com"
+proxy=http://10.237.124.133:3128
+https-proxy=http://10.237.124.133:3128
+
+#进入kibana目录，引导kibana并安装依赖
+yarn kbn bootstrap
+
+
+
+
+

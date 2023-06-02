@@ -1,0 +1,13 @@
+vim /etc/security/limits.conf
+esadmin soft nofile 655360
+esadmin hard nofile 655360
+esadmin soft memlock unlimited
+esadmin hard memlock unlimited
+esadmin soft  nproc  655360
+esadmin hard  nproc  655360
+
+
+vim /etc/sysctl.conf 
+vm.max_map_count=655360
+
+sysctl -p >/dev/null 2>&1

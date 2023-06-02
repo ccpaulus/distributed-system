@@ -1,0 +1,19 @@
+nohup clickhouse-client --multiquery < xxx.sql > xxx.log &
+
+
+cat *[^_all].sql > summary.sql
+cat *_all.sql > summary_all.sql
+sed -i 's/ATTACH TABLE /;CREATE TABLE vera./g' summary*.sql
+#sed -i 's/ATTACH MATERIALIZED VIEW /;CREATE MATERIALIZED VIEW rsfdb./g' summary*.sql
+
+scp *summary*.sql 10.237.184.157:/data
+scp *summary*.sql 10.237.184.218:/data
+scp *summary*.sql 10.237.184.219:/data
+scp *summary*.sql 10.237.184.220:/data
+clickhouse-client --multiquery < summary.sql
+
+
+2MO4hIjgXGH^0=7f
+X5l~Uk2uP8z4Y-GU
+agJ6U89KpPCY7-]t
+8Lt6V0eHNIx=8Ff_

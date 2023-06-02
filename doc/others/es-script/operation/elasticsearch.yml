@@ -1,0 +1,157 @@
+# ======================== Elasticsearch Configuration =========================
+#
+# NOTE: Elasticsearch comes with reasonable defaults for most settings.
+#       Before you set out to tweak and tune the configuration, make sure you
+#       understand what are you trying to accomplish and the consequences.
+#
+# The primary way of configuring a node is via this file. This template lists
+# the most important settings you may want to configure for a production cluster.
+#
+# Please consult the documentation for further information on configuration options:
+# https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+#
+cluster.name: ctmdiasprd
+#
+#Controls the low watermark for disk usage:
+#
+cluster.routing.allocation.disk.watermark.low: 90%
+#
+#Controls the high watermark:
+#
+cluster.routing.allocation.disk.watermark.high: 95%
+#
+#Controls the flood stage watermark:
+#
+cluster.routing.allocation.disk.watermark.flood_stage: 95%
+#
+#Remote cluster requests must be sent to a node that is allowed to act as a cross-cluster client:
+#
+cluster.remote.connect: false
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+#
+node.name: "ctmdiaspre-d3-10.230.239.7"
+#
+# Add custom attributes to the node:
+#
+#node.attr.rack: r1
+#
+#A node that has node.master set to true:
+#
+node.master: false
+#
+#A node that has node.data set to true:
+#
+node.data: true
+#
+#A node that has node.ingest set to true:
+#
+#node.ingest: false
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+#
+path.data: "/data" 
+#
+# Path to log files:
+#
+path.logs: "/opt/eshome/elasticsearch-7.1.1/logs"
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+#
+bootstrap.memory_lock: true
+#
+# Make sure that the heap size is set to about half the memory available
+# on the system and that the owner of the process is allowed to use this
+# limit.
+#
+# Elasticsearch performs poorly when the system is swapping the memory.
+#
+# ---------------------------------- Network -----------------------------------
+#
+# Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: 10.230.239.7
+#
+# Set a custom port for HTTP:
+#
+http.port: 9200
+#
+#Set a custom port for TCP:
+#
+transport.port: 9300
+#
+# For more information, consult the network module documentation.
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# Pass an initial list of hosts to perform discovery when this node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+discovery.seed_hosts:
+   - 10.235.5.101:9300
+   - 10.235.5.102:9300
+   - 10.235.5.103:9300
+#
+# Bootstrap the cluster using an initial set of master-eligible nodes:
+#
+#cluster.initial_master_nodes:
+#   - 10.101.19.122:9300
+#
+# For more information, consult the discovery and cluster formation module documentation.
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+# Block initial recovery after a full cluster restart until N nodes are started:
+#
+#gateway.recover_after_nodes: 3
+#
+# For more information, consult the gateway module documentation.
+#
+# ---------------------------------- Various -----------------------------------
+#
+# Require explicit names when deleting indices:
+#
+#action.destructive_requires_name: true
+#
+#----------------------------------- Index -------------------------------------
+#
+#The number of primary shards that an index should have:
+#
+#index.number_of_shards: 20
+#
+#Whether or not shards should be checked for corruption before opening:
+#
+#index.shard.check_on_startup: true
+#
+#The number of replicas each primary shard has:
+#
+#index.number_of_replicas: 0
+
+#---------------------------self--------------------------------------------------
+discovery.zen.fd.ping_interval: 5s
+bootstrap.system_call_filter: false
+
+thread_pool:
+    search:
+        size: 31
+        queue_size: 10000
+    write:
+        size: 21
+indices.queries.cache.size: 15%
+indices.memory.index_buffer_size: 30%
+indices.breaker.total.use_real_memory: false
+#--------------------------------------------------------------------------------
+
+#CVE-2020-7014
+xpack.security.authc.api_key.enabled: false
+#CVE-2014-3120
+script.allowed_types: none
+script.allowed_contexts: none

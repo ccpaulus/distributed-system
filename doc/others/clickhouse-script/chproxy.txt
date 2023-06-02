@@ -1,0 +1,7 @@
+curl -H "Content-Type: application/text" -X POST -d 'select 11' "http://10.104.209.51:10090/?user=alert_query"
+
+curl -H "Content-Type: application/text" -X POST -d 'select 11' "http://10.237.184.185:10090/?user=query"
+curl -H "Content-Type: application/text" -X POST -d 'select 11' "http://10.237.184.186:10090/?user=query"
+
+curl -H "Content-Type: application/text" -X POST -d 'select 11' "http://10.237.184.77:80/?user=query"
+curl -H "Content-Type: application/text" -X POST -d 'select 11' "http://10.237.184.78:80/?user=query"

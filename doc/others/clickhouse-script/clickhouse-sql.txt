@@ -1,0 +1,21 @@
+ALTER TABLE alert_134640ade4a74b4ab9f7575f644cf222 MODIFY TTL logTime + INTERVAL 1 MONTH;
+ALTER TABLE alert_134640ade4a74b4ab9f7575f644cf222 MATERIALIZE TTL;
+ALTER TABLE alert_134640ade4a74b4ab9f7575f644cf222 REMOVE TTL;
+
+select name from system.tables where name not like '%_all' and database = 'alert';
+
+select partition from system.parts where table = 'alert_apperror_info' group by partition order by partition limit 150;
+
+alter table alert_wechat_request drop partition ;
+
+alert_d95e1831cc164cf3a4003b5b73f76a98
+alert_apperror_info
+alert_pc_lv4_info
+alert_wechat_info
+alert_wechat_request
+
+find ./ -name ttl.txt | wc -l
+ls | wc -l
+
+
+insert into alert.alert_134640ade4a74b4ab9f7575f644cf222 select * from remote('10.93.0.115',alert.alert_134640ade4a74b4ab9f7575f644cf222)

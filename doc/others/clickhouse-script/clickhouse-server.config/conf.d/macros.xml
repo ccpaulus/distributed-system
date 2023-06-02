@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Ansible managed -->
+<yandex>
+  <macros>
+
+    <shard>01</shard>
+    <replica>03</replica>
+
+    <shard_alert>01</shard_alert>
+    <replica_alert>03</replica_alert>
+
+    <shard_alert_noreplica>01</shard_alert_noreplica>
+    <replica_alert_noreplica>02</replica_alert_noreplica>
+
+  </macros>
+</yandex>

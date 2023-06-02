@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- Ansible managed -->
+<yandex>
+  <zookeeper>
+    <node>
+      <host>10.93.0.95</host>
+      <port>2181</port>
+    </node>
+    <node>
+      <host>10.93.0.96</host>
+      <port>2181</port>
+    </node>
+    <node>
+      <host>10.93.0.97</host>
+      <port>2181</port>
+    </node>
+  </zookeeper>
+</yandex>

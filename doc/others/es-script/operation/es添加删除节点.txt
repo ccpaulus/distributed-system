@@ -1,0 +1,101 @@
+{http_url} = 10.104.238.10/ctmdiasprd
+
+1、排除投票节点（老节点）
+POST {http_url}/_cluster/voting_config_exclusions/{node_name}
+2、查看排除投票的节点
+GET {http_url}/_cluster/state?filter_path=metadata.cluster_coordination.voting_config_exclusions
+3、剔除老节点后，删除排除投票信息
+DELETE /_cluster/voting_config_exclusions
+
+
+4、新data节点加入
+5、Shrink index API 缩减shard数量为新的data数量（可能需要下先Shrink后Split）
+6、老data节点排除shard存放
+PUT {http_url}/_cluster/settings
+{
+  "transient" : {
+    "cluster.routing.allocation.exclude._ip" : "10.0.0.1"
+  }
+}
+
+
+6、所有老节点转为coordinating node(改变角色，重启服务，需清除老节点元数据：elasticsearch-node repurpose)，datanode可以不变，直接exclude(cluster.routing.allocation.exclude._ip)
+7、使用老节点地址替换后，老节点下线
+
+
+GET {http_url}/_template/dsa-tpl
+POST {http_url}/_template/dsa-tpl
+{
+	"order": 1,
+	"index_patterns": [
+		"ctmdias_*"
+	],
+	"settings": {
+		"index": {
+			"max_result_window": "5000",
+			"codec": "best_compression",
+			"mapping": {
+				"coerce": "false"
+			},
+			"refresh_interval": "1s",
+			"number_of_shards": "2",
+			"number_of_replicas": "1"
+		}
+	},
+	"mappings": {
+		"dynamic_templates": [
+			{
+				"time_template": {
+					"mapping": {
+						"format": "yyyy-MM-dd'T'HH:mm:ss.SSS Z",
+						"ignore_malformed": true,
+						"type": "date"
+					},
+					"match_mapping_type": "date"
+				}
+			},
+			{
+				"string_template": {
+					"mapping": {
+						"norms": false,
+						"ignore_above": 5000,
+						"ignore_malformed": true,
+						"type": "keyword"
+					},
+					"match_mapping_type": "string"
+				}
+			},
+			{
+				"long_template": {
+					"mapping": {
+						"ignore_malformed": true
+					},
+					"match_mapping_type": "long"
+				}
+			},
+			{
+				"double_template": {
+					"mapping": {
+						"ignore_malformed": true
+					},
+					"match_mapping_type": "double"
+				}
+			}
+		],
+		"properties": {
+			"createTime": {
+				"format": "yyyy-MM-dd'T'HH:mm:ss.SSS Z",
+				"type": "date"
+			},
+			"message": {
+				"norms": false,
+				"type": "text"
+			},
+			"logTime": {
+				"format": "yyyy-MM-dd'T'HH:mm:ss.SSS Z",
+				"type": "date"
+			}
+		}
+	},
+	"aliases": {}
+}

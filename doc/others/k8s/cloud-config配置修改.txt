@@ -1,0 +1,12 @@
+#cloud-config
+runcmd:
+ - echo "nameserver 10.237.164.1" > /etc/resolv.conf
+ - echo "server 10.27.126.249 iburst" >> /etc/chrony.conf 
+ - echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAy/BC+stc/ITx6KSvQp8PdXd/yf2nla15pJ63Q4ko7r4ETcdS9dvcW1uuKciBejcAJDjOx+1129wVFh+Io2153BD99yEVsY1YuCXUVp5e7Jz5xH2E41iYVyg2v36rZdzigD3061ZwoG5ZFa+e/T7/WpnLvrnHoFVn/ttTJcYUnw4tpeb6i5oCpXQMm9tWsEQQ8N5hL+hHF8yZZ4z9JCUizH/e/0CQ5VHa7vDs6nvtKVh8/lzfbTOo8uQRRxcoezhByJAuwBwCfhrs9SSR/iSVUitOR0v97FZgO9d6fXc8MStcjfrbycqo29yQADFnA5IAmhT5UNZGnbuRqPZBsiZLow== root@fortsitapp02">> /root/.ssh/authorized_keys
+ - [ cloud-init-per, once,  service,  restart ]
+ - [ cloud-init-per, once, restart_netconfig, service, network, restart ]
+ - [ sh, -c, systemctl restart chronyd ] 
+ - [ sh, -c, chronyc sources ]
+ 
+#centos 、 redhat时钟同步判断
+#免密90、jumpserver

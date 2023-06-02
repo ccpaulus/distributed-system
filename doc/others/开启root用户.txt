@@ -1,0 +1,6 @@
+sudo visudo
+
+snsoadmin ALL=(ALL)       NOPASSWD: ALL,!/bin/su,!/bin/bash
+snsoadmin ALL=(ALL)       NOPASSWD: ALL
+
+sudo su -

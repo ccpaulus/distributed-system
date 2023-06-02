@@ -1,0 +1,357 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-itaas
+
+---
+apiVersion: kubeovn.io/v1
+kind: Subnet
+metadata:
+  name: nts-78
+spec:
+  cidrBlock: 10.237.78.0/24
+  default: false
+  dhcpV4Options: ""
+  dhcpV6Options: ""
+  disableGatewayCheck: false
+  disableInterConnection: false
+  enableDHCP: false
+  enableIPv6RA: false
+  excludeIps:
+  - 10.237.78.0
+  - 10.237.78.254
+  - 10.237.78.255
+  gateway: 10.237.78.254
+  gatewayNode: ""
+  gatewayType: distributed
+  ipv6RAConfigs: ""
+  logicalGateway: false
+  namespaces:
+  - kvm-migration
+  natOutgoing: true
+  private: false
+  protocol: IPv4
+  provider: ovn
+  vpc: ovn-cluster
+
+---
+apiVersion: kubeovn.io/v1
+kind: Vip
+metadata:
+  name: mysql-migration-wip
+  namespace: kvm-migration
+spec:
+  subnet: nts-78
+  v4ip: 10.237.78.37
+  
+---
+apiVersion: kubeovn.io/v1
+kind: Vip
+metadata:
+  name: mysql-migration-rip
+  namespace: kvm-migration
+spec:
+  subnet: nts-78
+  v4ip: 10.237.78.57
+
+---
+### 1、创建kubevirt VM，注意 redhat 设置 useVirtioTransitional: true
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-cdi-mysql-master-migration
+  namespace: kvm-migration
+spec:
+  dataVolumeTemplates:
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-mysql-master-migration-sys-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 51Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/zj_mysql_test1_migration/zj_mysql_test1_system.qcow2
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-mysql-master-migration-data-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 101Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/zj_mysql_test1_migration/zj_mysql_test1_data.qcow2
+  runStrategy: Always
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/vm: vm-centos
+        serviceins: cks-b61j7zya
+      annotations:
+        ovn.kubernetes.io/ip_address: 10.237.78.74
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: sysdisk
+          - disk:
+              bus: virtio
+            name: datadisk
+          useVirtioTransitional: true
+        machine:
+          type: q35
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+      terminationGracePeriodSeconds: 0
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: serviceins
+                  operator: In
+                  values:
+                  - cks-b61j7zya
+              topologyKey: "kubernetes.io/hostname"
+      volumes:
+      - dataVolume:
+          name: cdi-mysql-master-migration-sys-dv
+        name: sysdisk
+      - dataVolume:
+          name: cdi-mysql-master-migration-data-dv
+        name: datadisk
+
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-cdi-mysql-slave-migration
+  namespace: kvm-migration
+spec:
+  dataVolumeTemplates:
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-mysql-slave-migration-sys-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 51Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/zj_mysql_test2_migration/zj_mysql_test2_system.qcow2
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-mysql-slave-migration-data-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 101Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/zj_mysql_test2_migration/zj_mysql_test2_data.qcow2
+  runStrategy: Always
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/vm: vm-centos
+        serviceins: cks-b61j7zya
+      annotations:
+        ovn.kubernetes.io/ip_address: 10.237.78.75
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: sysdisk
+          - disk:
+              bus: virtio
+            name: datadisk
+          useVirtioTransitional: true
+        machine:
+          type: q35
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+      terminationGracePeriodSeconds: 0
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: serviceins
+                  operator: In
+                  values:
+                  - cks-b61j7zya
+              topologyKey: "kubernetes.io/hostname"
+      volumes:
+      - dataVolume:
+          name: cdi-mysql-slave-migration-sys-dv
+        name: sysdisk
+      - dataVolume:
+          name: cdi-mysql-slave-migration-data-dv
+        name: datadisk
+
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-cdi-centos7-migration
+  namespace: kvm-migration
+spec:
+  dataVolumeTemplates:
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-centos7-migration-sys-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 80Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/migration_centos7/wldsj_kpas_es_1_system.qcow2
+  - metadata:
+      annotations:
+        cdi.kubevirt.io/storage.local.volume: "true"
+      name: cdi-centos7-migration-data-dv
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 125Gi
+        storageClassName: topolvm-provisioner
+      source:
+        http:
+          url: http://10.243.131.41:8086/kvm/migration_centos7/wldsj_kpas_es_1_data.qcow2
+  runStrategy: Always
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        kubevirt.io/vm: vm-centos
+      annotations:
+        ovn.kubernetes.io/ip_address: 10.66.0.201
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: sysdisk
+          - disk:
+              bus: virtio
+            name: datadisk
+        machine:
+          type: q35
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: cdi-centos7-migration-sys-dv
+        name: sysdisk
+      - dataVolume:
+          name: cdi-centos7-migration-data-dv
+        name: datadisk
+		
+		
+### 2、修改原KVM镜像
+a)修改mac地址
+/etc/udev/rules.d
+
+
+
+b)网卡dhcp打开
+
+
+
+c)安装新的cloud-init
+virt-copy-in -a zj_mysql_test1_system.qcow2 ./cloud-init-0.7.9.tar.gz /opt
+virt-copy-in -a zj_mysql_test1_system.qcow2 ./Python-3.10.5.tgz /opt
+virt-copy-in -a zj_mysql_test1_system.qcow2 ./CentOS-Base.repo /etc/yum.repos.d
+
+export https_proxy="http://10.243.100.159:8888"
+export http_proxy="http://10.243.100.159:8888"
+wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-vault-6.10.repo
+cd cloud-init-0.7.9
+yum install python-pip -y
+pip3 install -r ./requirements.txt
+
+
+
+service cloud-init-local start
+service cloud-init start
+service cloud-config start
+service cloud-final start
+
+chmod +x ./mc
+./mc alias set minio_server http://10.237.77.46:9000/ minioadmin minioadmin
+./mc mb minio_server/cutover
+
+./mc mv -r /data/migration_redhat6_migration minio_server/cutover/
+
+
+#添加路由
+route add -host 10.237.78.74/32 gw 192.168.0.2
+echo '10.237.78.74/32 via 192.168.0.2' >> /etc/sysconfig/network-scripts/route-eth3
+route add -host 10.237.78.75/32 gw 192.168.0.2
+echo '10.237.78.75/32 via 192.168.0.2' >> /etc/sysconfig/network-scripts/route-eth3
+
+route add -host 10.237.78.37/32 gw 192.168.0.2
+echo '10.237.78.37/32 via 192.168.0.2' >> /etc/sysconfig/network-scripts/route-eth3
+route add -host 10.237.78.57/32 gw 192.168.0.2
+echo '10.237.78.57/32 via 192.168.0.2' >> /etc/sysconfig/network-scripts/route-eth3
+
+#启动应用服务
+service mysqld restart
+service keepalived restart
+读写vip ：ip addr add 10.237.78.37/32 dev eth0  在materip执行
+只读vip：ip addr add 10.237.78.57/32 dev lo 在主，从ip上都执行了
+

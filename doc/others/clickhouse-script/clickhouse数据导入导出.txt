@@ -1,0 +1,28 @@
+select * from alert.alert_trace_join_all limit 1 into outfile '/data/alert_trace_join_all.txt'
+clickhouse-client --database="alert" --query="insert into alert_trace_join_all format TabSeparated" < ./alert_trace_join_all.txt
+alter table alert_trace_join on cluster cluster_uom_alert drop partition 20210615
+
+deepAr
+{
+	"algorithm_type": "8",
+	"rValue": 0.0,
+	"group_name": "13949",
+	"downCriticalValue": 0.274,
+	"score": 100.0,
+	"isEvent": "1",
+	"valueTime": 1623898200000,
+	"rule_id": "d961f8b7db972d0f475e037bc6845608",
+	"upCriticalValue": 2.76,
+	"alertType": "2",
+	"group_id": "",
+	"monitor_obj": "11098",
+	"isSent": 1,
+	"metric_ename": "13949",
+	"filteredCause": "\u6b63\u5e38\u53d1\u9001",
+	"health": "CRITICAL",
+	"predictiveValue": 1.67,
+	"duration": "2",
+	"LineID": "\u82cf\u5b81\u6613\u8d2d",
+	"event_id": "75f6f7aef6d143698817b3e6f75a928f",
+	"errorCode": "CSC-01-0005"
+}

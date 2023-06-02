@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!-- Ansible managed -->
+<yandex>
+   <!-- Profiles of settings. -->
+   <profiles>   
+        <!-- Default profiles. -->
+        <default>  
+            <max_threads>1</max_threads>
+            <max_memory_usage>20000000000</max_memory_usage>
+            <load_balancing>random</load_balancing>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+        </default>
+        <readonly>
+            <readonly>1</readonly>
+        </readonly>
+        <!-- Default profiles end. -->
+        <!-- Custom profiles. -->
+        <profile_uom_alert_query>
+            <max_threads>1</max_threads>
+            <max_memory_usage>20000000000</max_memory_usage>
+            <load_balancing>random</load_balancing>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+            <max_execution_time>30</max_execution_time>
+        </profile_uom_alert_query>
+        <profile_uom_alert>
+            <max_memory_usage>20000000000</max_memory_usage>
+            <max_execution_time>30</max_execution_time>
+            <load_balancing>random</load_balancing>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+        </profile_uom_alert>
+        <profile_ares>
+            <max_memory_usage>20000000000</max_memory_usage>
+            <load_balancing>random</load_balancing>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+        </profile_ares>
+        <!-- Custom profiles end. -->
+    </profiles>
+
+    <!-- Users and ACL. -->
+    <users>
+        <!-- Default users. -->
+        <!-- Default user for login if user not defined -->
+        <default>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </default>
+            <!-- Example of user with readonly access -->
+        <readonly>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </readonly>
+        <!-- Custom users. -->
+        <!-- classic user insert_common with hex password -->
+        <insert_common>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </insert_common>
+        <!-- classic user query_common with hex password -->
+        <query_common>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>profile_uom_alert_query</profile>
+            <quota>default</quota>
+        </query_common>
+        <!-- classic user insert_uom_alert with hex password -->
+        <insert_uom_alert>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </insert_uom_alert>
+        <!-- classic user query_uom_alert with hex password -->
+        <query_uom_alert>
+            <password></password>
+            <networks incl="networks" replace="replace">
+                <ip>::/0</ip>
+            </networks>
+            <profile>profile_uom_alert</profile>
+            <quota>quota_uom_alert</quota>
+        </query_uom_alert>
+    </users>
+
+    <!-- Quotas. -->
+    <quotas>
+        <!-- Default quotas. -->
+        <default>
+            <duration>3600</duration>
+            <queries>0</queries>
+            <errors>0</errors>
+            <result_rows>0</result_rows>
+            <read_rows>0</read_rows>
+            <execution_time>0</execution_time>
+        </default>
+        <quota_uom_alert>
+            <duration>3600</duration>
+            <queries>0</queries>
+            <errors>0</errors>
+            <result_rows>0</result_rows>
+            <read_rows>0</read_rows>
+            <execution_time>0</execution_time>
+        </quota_uom_alert>
+    </quotas>
+</yandex>
