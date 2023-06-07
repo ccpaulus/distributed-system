@@ -1,0 +1,4284 @@
+{
+	"info": {
+		"_postman_id": "4110dd2b-487f-499a-8e1a-8184f23c3d8c",
+		"name": "ctmdias",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "V1.1.7",
+			"item": [
+				{
+					"name": "topN-CK",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentStartTime\": \"2020-10-22T11:00:00.000Z\",\r\n    \"currentEndTime\": \"2020-10-22T11:10:00.000Z\",\r\n    \"lastStartTime\": \"2020-10-21T11:00:00.000Z\",\r\n    \"lastEndTime\": \"2020-10-21T11:10:00.000Z\",\r\n    \"eventId\": \"a660a1612287414193c22666a2362684\",\r\n    \"monitorObjId\": \"11098\",\r\n    \"metricId\": 13949,\r\n    \"alertTime\": \"2020-10-22T11:04:00.000Z\",\r\n    \"dimNames\": [\r\n        \"businessType\",\r\n        \"channelType\"\r\n    ],\r\n    \"columnNames\": [\r\n        \"1\",\r\n        \"1\"\r\n    ],\r\n    \"currentValOrder\": 0,\r\n    \"rateOrder\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/analysis/topN",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"topN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topN-CK sit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentStartTime\": \"2020-10-22T11:00:00.000Z\",\r\n    \"currentEndTime\": \"2020-10-22T11:10:00.000Z\",\r\n    \"lastStartTime\": \"2020-10-21T11:00:00.000Z\",\r\n    \"lastEndTime\": \"2020-10-21T11:10:00.000Z\",\r\n    \"eventId\": \"a660a1612287414193c22666a2362684\",\r\n    \"monitorObjId\": \"11098\",\r\n    \"metricId\": 13949,\r\n    \"alertTime\": \"2020-10-22T11:04:00.000Z\",\r\n    \"dimNames\": [\r\n        \"businessType\",\r\n        \"channelType\"\r\n    ],\r\n    \"columnNames\": [\r\n        \"1\",\r\n        \"1\"\r\n    ],\r\n    \"currentValOrder\": 0,\r\n    \"rateOrder\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/analysis/topN",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"topN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topN-VM",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentStartTime\": \"2020-10-26T07:17:00.000Z\",\r\n    \"currentEndTime\": \"2020-10-26T07:27:00.000Z\",\r\n    \"lastStartTime\": \"2020-10-25T07:17:00.000Z\",\r\n    \"lastEndTime\": \"2020-10-25T07:27:00.000Z\",\r\n    \"eventId\": \"a660a1612287414193c22666a2362684\",\r\n    \"monitorObjId\": 11099,\r\n    \"metricId\": 13958,\r\n    \"alertTime\": \"2020-10-26T07:22:00.000Z\",\r\n    \"dimNames\": [\r\n        \"domainName\"\r\n    ],\r\n    \"columnNames\": [\"0\",\"f.m.suning.com\"],\r\n    \"currentValOrder\": 0,\r\n    \"rateOrder\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/analysis/topN",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"topN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topN-VM sit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentStartTime\": \"2020-10-26T07:17:00.000Z\",\r\n    \"currentEndTime\": \"2020-10-26T07:27:00.000Z\",\r\n    \"lastStartTime\": \"2020-10-25T07:17:00.000Z\",\r\n    \"lastEndTime\": \"2020-10-25T07:27:00.000Z\",\r\n    \"eventId\": \"a660a1612287414193c22666a2362684\",\r\n    \"monitorObjId\": 11099,\r\n    \"metricId\": 13958,\r\n    \"alertTime\": \"2020-10-26T07:22:00.000Z\",\r\n    \"dimNames\": [\r\n        \"domainName\"\r\n    ],\r\n    \"columnNames\": [\"0\",\"f.m.suning.com\"],\r\n    \"currentValOrder\": 0,\r\n    \"rateOrder\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/analysis/topN",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"topN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dimList",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/analysis/dimList?monitorObjId=11099",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"dimList"
+							],
+							"query": [
+								{
+									"key": "monitorObjId",
+									"value": "11099"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dimList sit",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/analysis/dimList?monitorObjId=11099",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"analysis",
+								"dimList"
+							],
+							"query": [
+								{
+									"key": "monitorObjId",
+									"value": "11099"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "monitor-report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"monitorObjId\": 11099,\r\n    \"startTime\": \"2020-08-01T16:00:00.000Z\",\r\n    \"endTime\": \"2020-09-01T15:59:59.000Z\",\r\n    \"sortName\": \"hitRate\",\r\n    \"sortType\": \"desc\",\r\n    \"pageNum\": 2,\r\n    \"pageSize\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/report/monitor",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"report",
+								"monitor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "monitor-report sit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"monitorObjId\": 11099,\r\n    \"startTime\": \"2020-08-01T16:00:00.000Z\",\r\n    \"endTime\": \"2020-09-01T15:59:59.000Z\",\r\n    \"sortName\": \"hitRate\",\r\n    \"sortType\": \"desc\",\r\n    \"pageNum\": 2,\r\n    \"pageSize\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/report/monitor",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"report",
+								"monitor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "alert-report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/report/alert?startTime=2020-08-01T16:00:00.000Z&endTime=2020-09-01T15:59:59.000Z",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"report",
+								"alert"
+							],
+							"query": [
+								{
+									"key": "startTime",
+									"value": "2020-08-01T16:00:00.000Z"
+								},
+								{
+									"key": "endTime",
+									"value": "2020-09-01T15:59:59.000Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "alert-report sit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/report/alert?startTime=2020-08-01T16:00:00.000Z&endTime=2020-09-01T15:59:59.000Z",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"report",
+								"alert"
+							],
+							"query": [
+								{
+									"key": "startTime",
+									"value": "2020-08-01T16:00:00.000Z"
+								},
+								{
+									"key": "endTime",
+									"value": "2020-09-01T15:59:59.000Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vm query",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.243.171.88:8481/select/3/prometheus/api/v1/query_range?query=sum(count_over_time(sparse_vm_respTime{statusCode=\"0\",domainName=\"order.suning.com\"})) by(statusCode)&start=1597665480&end=1597665600&step=60",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"171",
+								"88"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "sum(count_over_time(sparse_vm_respTime{statusCode=\"0\",domainName=\"order.suning.com\"})) by(statusCode)"
+								},
+								{
+									"key": "start",
+									"value": "1597665480"
+								},
+								{
+									"key": "end",
+									"value": "1597665600"
+								},
+								{
+									"key": "step",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-SIT event group by histogram",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"isSent\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"event_status\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"terms\": {\n                        \"monitor_obj\": [\n                            11098\n                        ],\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1604937600000,\n                            \"to\": 1605023999000,\n                            \"include_lower\": true,\n                            \"include_upper\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"aggregations\": {\n        \"time\": {\n            \"date_histogram\": {\n                \"field\": \"alert_time\",\n                \"interval\": \"1d\",\n                \"offset\": -28800000,\n                \"format\" : \"yyyy-MM-dd\",\n                \"order\": {\n                    \"_key\": \"asc\"\n                },\n                \"keyed\": false,\n                \"min_doc_count\": 0\n            },\n            \"aggregations\": {\n                \"unMarked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value==''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"marked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!=''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"real\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!='' && doc['isAlert'].value=='2'){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.159.105:9200/ctmdias_event_info_202011/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"105"
+							],
+							"port": "9200",
+							"path": [
+								"ctmdias_event_info_202011",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-SIT event group by histogram Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"isSent\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"event_status\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"terms\": {\n                        \"monitor_obj\": [\n                            11098\n                        ],\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1604937600000,\n                            \"to\": 1605023999000,\n                            \"include_lower\": true,\n                            \"include_upper\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"aggregations\": {\n        \"time\": {\n            \"histogram\": {\n                \"field\": \"alert_time\",\n                \"interval\": 86400000,\n                \"offset\": 28800000,\n                \"order\": {\n                    \"_key\": \"asc\"\n                },\n                \"keyed\": false,\n                \"min_doc_count\": 0\n            },\n            \"aggregations\": {\n                \"unMarked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value==''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"marked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!=''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"real\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!='' && doc['isAlert'].value=='2'){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.159.105:9200/ctmdias_event_info_202011/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"105"
+							],
+							"port": "9200",
+							"path": [
+								"ctmdias_event_info_202011",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-PRD event group by histogram",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"lineID\": {\n                            \"value\": \"苏宁易购\"\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"event_status\": {\n                            \"value\": \"1\"\n                        }\n                    }\n                }\n                // ,\n                // {\n                //     \"range\": {\n                //         \"alert_time\": {\n                //             \"from\": 1598889600000,\n                //             \"to\": 1598975999000\n                //         }\n                //     }\n                // }\n            ]\n        }\n    },\n    \"aggs\": {\n        \"time\": {\n            \"date_histogram\" : {\n                \"field\" : \"alert_time\",\n                \"interval\" : \"day\",  \n                \"order\" : { \"_key\" : \"desc\" }\n            },\n\t\t\t\"aggregations\": {\n\t\t\t\t\"unMarked\": {\n\t\t\t\t\t\"sum\": {\n\t\t\t\t\t\t\"script\": {\n\t\t\t\t\t\t\t\"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value==''){1} else {0}\",\n\t\t\t\t\t\t\t\"lang\": \"painless\"\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n                \"marked\": {\n\t\t\t\t\t\"sum\": {\n\t\t\t\t\t\t\"script\": {\n\t\t\t\t\t\t\t\"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!=''){1} else {0}\",\n\t\t\t\t\t\t\t\"lang\": \"painless\"\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n                \"real\": {\n\t\t\t\t\t\"sum\": {\n\t\t\t\t\t\t\"script\": {\n\t\t\t\t\t\t\t\"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!='' && doc['isAlert'].value=='2'){1} else {0}\",\n\t\t\t\t\t\t\t\"lang\": \"painless\"\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_event_info_202108/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"ctmdias_event_info_202108",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-PRD event group by metric",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"lineID\": {\n                            \"value\": \"苏宁易购\"\n                        }\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1597852800000,\n                            \"to\": 1598976000000\n                        }\n                    }\n                }\n            ]\n        }\n    },\n    \"aggs\": {\n        \"metric_ename\": {\n            \"filters\": { // 配置过滤条件，支持 HASH 或 数组格式\n                \"filters\": {\n                    \"unMarked\": [\n                        {\n                            \"match\": {\n                                \"isMark\": \"1\"\n                            }\n                        },\n                        {\n                            \"match\": {\n                                \"event_status\": \"1\"\n                            }\n                        }\n                    ],\n                    \"marked\": [\n                        {\n                            \"match\": {\n                                \"isMark\": \"2\"\n                            }\n                        },\n                        {\n                            \"match\": {\n                                \"event_status\": \"1\"\n                            }\n                        }\n                    ]\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_event_info_202103/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"ctmdias_event_info_202103",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-SIT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"event_status\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"terms\": {\n                        \"monitor_obj\": [\n                            120,\n                            122,\n                            123,\n                            124,\n                            125,\n                            126,\n                            11096,\n                            11097,\n                            11098,\n                            11099,\n                            11101,\n                            11102,\n                            11104,\n                            11106\n                        ],\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1596297600000,\n                            \"to\": 1598975999000,\n                            \"include_lower\": true,\n                            \"include_upper\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"aggregations\": {\n        \"monitorObjId\": {\n            \"terms\": {\n                \"field\": \"monitor_obj\",\n                \"size\": 10,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            },\n            \"aggregations\": {\n                \"unMarked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value==''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"marked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!=''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"real\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!='' && doc['isAlert'].value=='2'){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.159.105:9200/ctmdias_event_info_202009/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"105"
+							],
+							"port": "9200",
+							"path": [
+								"ctmdias_event_info_202009",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-PRD",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"event_status\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"isSent\": {\n                            \"value\": 1,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"terms\": {\n                        \"monitor_obj\": [\n                            120,\n                            121,\n                            122,\n                            123,\n                            124,\n                            125,\n                            126,\n                            135,\n                            136,\n                            137,\n                            138,\n                            139,\n                            140,\n                            141,\n                            152,\n                            155,\n                            159,\n                            160,\n                            161,\n                            162,\n                            163,\n                            165,\n                            166,\n                            167\n                        ],\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1605456000000,\n                            \"to\": 1605542399000,\n                            \"include_lower\": true,\n                            \"include_upper\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"aggregations\": {\n        \"monitorObjId\": {\n            \"terms\": {\n                \"field\": \"monitor_obj\",\n                \"size\": 10,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            },\n            \"aggregations\": {\n                \"unMarked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value==''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"marked\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!=''){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                },\n                \"real\": {\n                    \"sum\": {\n                        \"script\": {\n                            \"source\": \"if(doc['isMark'].value=='1' && doc['markPeople'].value!='' && doc['isAlert'].value=='2'){1} else {0}\",\n                            \"lang\": \"painless\"\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_event_info_202011/_search",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"ctmdias_event_info_202011",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1.1.4",
+			"item": [
+				{
+					"name": "metric_upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/19056685/Desktop/批量指标导入模板.xls"
+								},
+								{
+									"key": "lineId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "monitorObjId",
+									"value": "11099",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/metric/upload",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"metric",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "gp_data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/model/task/gp/data?modelId=10000001&nodeCode=NODE_BUILD",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"model",
+								"task",
+								"gp",
+								"data"
+							],
+							"query": [
+								{
+									"key": "modelId",
+									"value": "10000001"
+								},
+								{
+									"key": "nodeCode",
+									"value": "NODE_BUILD"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analysis_result",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/model/task/analysis/result?modelId=2019110101&nodeCode=NODE_ANALYSIS",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"model",
+								"task",
+								"analysis",
+								"result"
+							],
+							"query": [
+								{
+									"key": "modelId",
+									"value": "2019110101"
+								},
+								{
+									"key": "nodeCode",
+									"value": "NODE_ANALYSIS"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analysis_chart",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"modelId\":3000000037,\r\n    \"lineId\":\"1\",\r\n    \"monitorObjId\":11096,\r\n    \"metricName\":\"\",\r\n    \"resultStable\":0,\r\n    \"resultCycle\":0,\r\n    \"resultSparse\":1,\r\n    \"nodeCode\":\"NODE_ANALYSIS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/model/task/analysis/chart",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"model",
+								"task",
+								"analysis",
+								"chart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dashboard_chartList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": \"2020-06-24T02:25:00.000Z\",\r\n    \"endDate\": \"2020-06-24T08:25:00.000Z\",\r\n    \"lineId\": \"1\",\r\n    \"monitorObjIds\": [\r\n        11097\r\n    ],\r\n    \"query\": \"cdn\",\r\n    \"pageNum\": 1,\r\n    \"pageSize\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/dashboard/detectedErrorChartList",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"detectedErrorChartList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dashboard_errorCount",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": \"2020-06-24T02:25:00.000Z\",\r\n    \"endDate\": \"2020-06-24T08:25:00.000Z\",\r\n    \"lineId\": \"1\",\r\n    \"monitorObjIds\": [\r\n        11097\r\n    ],\r\n    \"query\": \"cdn\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/dashboard/error/count",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"error",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dashboard_alertCount",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": \"2020-06-24T02:25:00.000Z\",\r\n    \"endDate\": \"2020-06-24T08:25:00.000Z\",\r\n    \"lineId\": \"1\",\r\n    \"monitorObjIds\": [\r\n        11097\r\n    ],\r\n    \"query\": \"cdn\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/dashboard/alert/count",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"alert",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getStrategyAvailableMonitor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/monitor/getStrategyAvailableMonitor?lineId=1&serialcode=17612d8f9f734d30bb93433331deb1c6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"monitor",
+								"getStrategyAvailableMonitor"
+							],
+							"query": [
+								{
+									"key": "lineId",
+									"value": "1"
+								},
+								{
+									"key": "serialcode",
+									"value": "17612d8f9f734d30bb93433331deb1c6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getStrategyAvailableMetrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/metric/getStrategyAvailableMetrics?id=11097&serialcode=17612d8f9f734d30bb93433331deb1c6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"metric",
+								"getStrategyAvailableMetrics"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "11097"
+								},
+								{
+									"key": "serialcode",
+									"value": "17612d8f9f734d30bb93433331deb1c6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getStrategyAvailableMetrics Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/ctmdias-web/api/intel-alerts/metric/getStrategyAvailableMetrics?id=11097&serialcode=17612d8f9f734d30bb93433331deb1c6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"metric",
+								"getStrategyAvailableMetrics"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "11097"
+								},
+								{
+									"key": "serialcode",
+									"value": "17612d8f9f734d30bb93433331deb1c6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vm query",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.243.171.88:8481/select/3/prometheus/api/v1/query_range?query=count(cdnp_cdnFullLog_yhprd_edgeLog_respTime{domainName=~\"talk8a.suning.com|talk8b.suning.com\",statusCode=\"200\"}) &start=1593792000&end=1593792000",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"171",
+								"88"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "count(cdnp_cdnFullLog_yhprd_edgeLog_respTime{domainName=~\"talk8a.suning.com|talk8b.suning.com\",statusCode=\"200\"}) "
+								},
+								{
+									"key": "start",
+									"value": "1593792000"
+								},
+								{
+									"key": "end",
+									"value": "1593792000"
+								},
+								{
+									"key": "step",
+									"value": "60",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vm query (PRD)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://log.data.cloudytrace.com:8481/select/3/prometheus/api/v1/query_range?query=cdnp_cdnFullLog_yhprd_edgeLog_respTime {domainName=\"my.suning.com\"}&start=1638499800&end=1638500100&step=60",
+							"protocol": "http",
+							"host": [
+								"log",
+								"data",
+								"cloudytrace",
+								"com"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "cdnp_cdnFullLog_yhprd_edgeLog_respTime {domainName=\"my.suning.com\"}"
+								},
+								{
+									"key": "start",
+									"value": "1638499800"
+								},
+								{
+									"key": "end",
+									"value": "1638500100"
+								},
+								{
+									"key": "step",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vm insert",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/plain",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "sparse_vm,domainName=pas.suning.com,statusCode=0,endNode=182.106.174.41 respTime=1 1592582400000000000\r\nsparse_vm,domainName=pas.suning.com,statusCode=0,endNode=182.106.174.41 respTime=1 1592578800000000000"
+						},
+						"url": {
+							"raw": "http://10.243.169.158:8480/insert/3/influx/write",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"169",
+								"158"
+							],
+							"port": "8480",
+							"path": [
+								"insert",
+								"3",
+								"influx",
+								"write"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete strategy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://log.data.cloudytrace.com:8481/select/3/prometheus/api/v1/query_range?query=cdnp_cdnFullLog_yhprd_edgeLog_respTime {domainName=\"my.suning.com\"}&start=1593482400&end=1593482400&step=60",
+							"protocol": "http",
+							"host": [
+								"log",
+								"data",
+								"cloudytrace",
+								"com"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "cdnp_cdnFullLog_yhprd_edgeLog_respTime {domainName=\"my.suning.com\"}"
+								},
+								{
+									"key": "start",
+									"value": "1593482400"
+								},
+								{
+									"key": "end",
+									"value": "1593482400"
+								},
+								{
+									"key": "step",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "searchUserDetail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": 19056685\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://mgsso.cloudytrace.com/remote/searchUserInfo.htm",
+							"protocol": "http",
+							"host": [
+								"mgsso",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"remote",
+								"searchUserInfo.htm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "tenantId",
+								"value": "CTMDIAS",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": 19056685\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.103.192.35:8080/api/v1/rule/delete/batch/[]",
+							"protocol": "http",
+							"host": [
+								"10",
+								"103",
+								"192",
+								"35"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"rule",
+								"delete",
+								"batch",
+								"[]"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "tenantId",
+								"type": "text",
+								"value": "CTMDIAS"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"lineId\": \"1\",\r\n    \"monitorObjIds\": [],\r\n    \"startDate\": \"2020-07-27T23:20:00.000Z\",\r\n    \"endDate\": \"2020-07-28T02:20:00.000Z\",\r\n    \"query\": \"\",\r\n    \"pageNum\": 1,\r\n    \"pageSize\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdias.cloudytrace.com/ctmdias-web/api/intel-alerts/dashboard/detectedErrorChartList",
+							"protocol": "http",
+							"host": [
+								"ctmdias",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"detectedErrorChartList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "very_important",
+			"item": [
+				{
+					"name": "deleteRule",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "b612e2d2-a064-48b0-80d1-adc045aaa386",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "euphoria",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "tenantId",
+								"value": "CTMDIAS",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.243.13.218:8080/api/v1/rule/delete/d592fa05f3986b105c59104f8875aa17",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"13",
+								"218"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"rule",
+								"delete",
+								"d592fa05f3986b105c59104f8875aa17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRule Banch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "tenantId",
+								"value": "CTMDIAS",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": 19056685\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.243.13.218:8080/api/v1/rule/delete/batch/[]",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"13",
+								"218"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"rule",
+								"delete",
+								"batch",
+								"[]"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "airflow",
+			"item": [
+				{
+					"name": "deleteDag-sit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rest_api_plugin_http_token",
+								"value": "aiops",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://10.243.55.20:8080/admin/rest_api/api?api=delete_dag&dag_id=11096_13914_DEEPAR_c4ced964f924717e6f9f6a3a6cc1694a",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"55",
+								"20"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"rest_api",
+								"api"
+							],
+							"query": [
+								{
+									"key": "api",
+									"value": "delete_dag"
+								},
+								{
+									"key": "dag_id",
+									"value": "11096_13914_DEEPAR_c4ced964f924717e6f9f6a3a6cc1694a"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteDag-prd",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "rest_api_plugin_http_token",
+								"type": "text",
+								"value": "aiops"
+							}
+						],
+						"url": {
+							"raw": "http://airflow.aiops.cnsuning.com/admin/rest_api/api?api=delete_dag&dag_id=",
+							"protocol": "http",
+							"host": [
+								"airflow",
+								"aiops",
+								"cnsuning",
+								"com"
+							],
+							"path": [
+								"admin",
+								"rest_api",
+								"api"
+							],
+							"query": [
+								{
+									"key": "api",
+									"value": "delete_dag"
+								},
+								{
+									"key": "dag_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dashboard",
+			"item": [
+				{
+					"name": "vmPieChart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 1581955080,\n    \"to\": 1581955320,\n    \"chartId\": \"10001\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/dashboard/vmPieChart",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"vmPieChart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "metric local",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 1582610580000,\n    \"to\": 1582610940000,\n    \"lineId\": \"1\",\n    \"monitorObjId\": 136,\n    \"metricId\": 78\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/ctmdias-web/api/intel-alerts/dashboard/metricChart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"metricChart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "metric sit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"from\": 1585218600000,\"to\": 1585219200000, \"lineId\": \"1\",\"monitorObjId\": 11046,\"metricId\": 13911}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/dashboard/metricChart",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"metricChart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "metric prd",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 1585141200000,\n    \"to\": 1585143000000,\n    \"lineId\": \"1\",\n    \"monitorObjId\": 121,\n    \"metricId\": 401\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdias.cloudytrace.com/ctmdias-web/api/intel-alerts/dashboard/metricChart",
+							"protocol": "http",
+							"host": [
+								"ctmdias",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"dashboard",
+								"metricChart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"CDNAllEdgeLog:coreDomainName-request-price\",\r\n\t\"metricType\": \"baseMetric\",\r\n\t\"xAxisType\": \"time\",\r\n\t\"sql\": \"\",\r\n\t\"value\": \"\",\r\n\t\"masterGroup\": \"\",\r\n\t\"slaveGroup\": \"\",\r\n\t\"metricSourceType\": 0,\r\n\t\"requestInfo\": \"[{\\\"requestMethod\\\":\\\"POST\\\",\\\"requestPath\\\":\\\"/ctmdias-web/api/intel-alerts/dashboard/metricChart\\\",\\\"requestBody\\\":\\\"{\\\\\\\"from\\\\\\\":$_start,\\\\\\\"to\\\\\\\":$_end,\\\\\\\"lineId\\\\\\\": \\\\\\\"1\\\\\\\",\\\\\\\"monitorObjId\\\\\\\": 120,\\\\\\\"metricId\\\\\\\": 414}\\\"}]\",\r\n\t\"userCalculationExpression\": \"\",\r\n\t\"legendFormat\": \"\",\r\n\t\"stepInterval\": \"\",\r\n\t\"metricQueryExpression\": \"[]\",\r\n\t\"compoundOperation\": \"\",\r\n\t\"metricDataSource\": \"[{\\\"calculateMethod\\\":\\\"\\\",\\\"calculateField\\\":\\\"\\\",\\\"compoundMetricId\\\":\\\"a\\\",\\\"ranking\\\":\\\"50\\\",\\\"dataSourceType\\\":\\\"webapi\\\",\\\"productCode\\\":\\\"CTMDIAS\\\",\\\"dataSourceId\\\":105,\\\"indexField\\\":\\\"ctmdias-webapi\\\",\\\"database\\\":null,\\\"reName\\\":\\\"ctmdias-webapi\\\"}]\",\r\n\t\"groupBy\": \"[{\\\"type\\\":\\\"\\\",\\\"field\\\":\\\"\\\",\\\"anotherName\\\":\\\"\\\",\\\"openMapping\\\":false,\\\"isDate\\\":false,\\\"parent\\\":\\\"\\\",\\\"term\\\":{\\\"order\\\":\\\"\\\",\\\"size\\\":\\\"\\\"},\\\"ranges\\\":[{\\\"from\\\":0,\\\"to\\\":1},{\\\"from\\\":1,\\\"to\\\":2}],\\\"filter\\\":[{\\\"query\\\":\\\"\\\",\\\"label\\\":\\\"\\\"}],\\\"date_histogram\\\":{\\\"interval\\\":\\\"\\\",\\\"customInterval\\\":\\\"\\\"},\\\"standard_histogram\\\":{\\\"interval\\\":\\\"\\\",\\\"showNullGroup\\\":false,\\\"normMin\\\":\\\"\\\",\\\"normMax\\\":\\\"\\\"},\\\"date_ranges\\\":[{\\\"from\\\":null,\\\"to\\\":\\\"2020-03-26T01:28:21.261Z\\\"}]}]\",\r\n\t\"andOr\": \"and\",\r\n\t\"queryCondition\": \"[]\",\r\n\t\"metricUnit\": \"none\",\r\n\t\"description\": \"\",\r\n\t\"access\": \"0\",\r\n\t\"privateRange\": \"[]\",\r\n\t\"category\": \"ctmdias_7*24\",\r\n\t\"childCategory\": \"CDNAllEdgeLog:coreDomainName-request\",\r\n\t\"analyzeField\": \"\",\r\n\t\"analyzeAlias\": \"\",\r\n\t\"swimmingLane\": 0,\r\n\t\"accessSystem\": \"CTMDIAS\",\r\n\t\"privateObject\": \"\",\r\n\t\"id\": null,\r\n\t\"productCode\": \"CTMDIAS\",\r\n\t\"source\": \"ctmdias-webapi\"\r\n}"
+						},
+						"url": {
+							"raw": "http://dashboard.cloudytrace.com/management/metric/addUpdate",
+							"protocol": "http",
+							"host": [
+								"dashboard",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"management",
+								"metric",
+								"addUpdate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "offline-reference",
+			"item": [
+				{
+					"name": "chartData",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"metricId\":85,\n\t\"startTime\":\"2020-01-02T00:00:00.000Z\",\n\t\"endTime\":\"2020-01-02T03:01:00.000Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/offline-inference/chartData",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"offline-inference",
+								"chartData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reference",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"metricId\":85,\n\t\"startTime\":\"2019-12-30 00:00:00\",\n\t\"endTime\":\"2019-12-30 23:59:00\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.235.1.238:4000/api/post/service/offline_inference/realtime",
+							"protocol": "http",
+							"host": [
+								"10",
+								"235",
+								"1",
+								"238"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"post",
+								"service",
+								"offline_inference",
+								"realtime"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "redpacket",
+			"item": [
+				{
+					"name": "heartbeat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://10.47.150.79:8080/ctmdias-web/api/intel-alerts/redpacket/sendHeartbeat",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"150",
+								"79"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"redpacket",
+								"sendHeartbeat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.47.150.79:8080/ctmdias-redpacket/api/intel-alerts/redpacket/heartbeats?pageNum=1&pageSize=20",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"150",
+								"79"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"redpacket",
+								"heartbeats"
+							],
+							"query": [
+								{
+									"key": "pageNum",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "quickhand",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Connection",
+								"value": "11",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"BP1TdSO1384v3Z5+NNwdEGRNU+bSM+v+s2sI0b1fXYo=\",\n    \"timestamp\": \"1579490215000\",\n    \"couponList\": [\n        {\n            \"couponId\": 1000146,\n            \"count\": 0\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://ad-a1.e.kuaishou.com/ad/a1/perf/report",
+							"protocol": "https",
+							"host": [
+								"ad-a1",
+								"e",
+								"kuaishou",
+								"com"
+							],
+							"path": [
+								"ad",
+								"a1",
+								"perf",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QPS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.104.208.198/ctmdias-redpacket/api/intel-alerts/redpacket/QPSChart",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"208",
+								"198"
+							],
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"redpacket",
+								"QPSChart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(dev)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "select * from t_redpacket_message_info;\nselect * from t_intel_alert_metric;",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/ctmdias-redpacket/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(dev) Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\":\"h7f32H8p4CV10JM831h92bgv1g73fg87a92w\",\n\t\"sql\":\"select * from t_redpacket_message_info;\"\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/ctmdias-redpacket/api/intel-alerts/sql/exec",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								"exec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(sit)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "select * from t_redpacket_message_info",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.150.79:8080/ctmdias-redpacket/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"150",
+								"79"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(sit) Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\":\"h7f32H8p4CV10JM831h92bgv1g73fg87a92w\",\n\t\"sql\":\"select * from t_redpacket_message_info;\"\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.150.79:8080/ctmdias-redpacket/api/intel-alerts/sql/exec",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"150",
+								"79"
+							],
+							"port": "8080",
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								"exec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(prd)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "select * from t_redpacket_message_info;\nselect * from t_intel_alert_metric;",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.208.198/ctmdias-redpacket/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"208",
+								"198"
+							],
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sql(prd) Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\":\"h7f32H8p4CV10JM831h92bgv1g73fg87a92w\",\n\t\"sql\":\"select * from t_redpacket_message_info where result_code = 1 order by timestamp desc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.208.198/ctmdias-redpacket/api/intel-alerts/sql/exec",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"208",
+								"198"
+							],
+							"path": [
+								"ctmdias-redpacket",
+								"api",
+								"intel-alerts",
+								"sql",
+								"exec"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1.0.6",
+			"item": [
+				{
+					"name": "vmquery",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://10.243.171.88:8481/select/3/prometheus/api/v1/query_range?query=count_over_time(vm_test_c2{c3='5'})&start=1591185600&end=1591189200& step=60",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"171",
+								"88"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "count_over_time(vm_test_c2{c3='5'})"
+								},
+								{
+									"key": "start",
+									"value": "1591185600"
+								},
+								{
+									"key": "end",
+									"value": "1591189200"
+								},
+								{
+									"key": " step",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vmquery insert",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/plain"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "cdnp_cdnFullLog_yhprd_edgeLog,c3=1 c2=94 1583111053000000000",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.243.169.158:8480/insert/3/influx/write",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"169",
+								"158"
+							],
+							"port": "8480",
+							"path": [
+								"insert",
+								"3",
+								"influx",
+								"write"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vmquery Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://10.243.171.88:8481/select/3/prometheus/api/v1/query?query=topk(5,sum(count_over_time(cdnp_cdnFullLog_yhprd_edgeLog_respTime{}[900s])) by(domainName))&time=1581955660",
+							"protocol": "http",
+							"host": [
+								"10",
+								"243",
+								"171",
+								"88"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "topk(5,sum(count_over_time(cdnp_cdnFullLog_yhprd_edgeLog_respTime{}[900s])) by(domainName))"
+								},
+								{
+									"key": "time",
+									"value": "1581955660"
+								},
+								{
+									"key": "end",
+									"value": "1581952800",
+									"disabled": true
+								},
+								{
+									"key": "step",
+									"value": "120",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vmquery(PRD)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://log.data.cloudytrace.com:8481/select/3/prometheus/api/v1/query_range?query=sum%28count_over_time%28cdnp_cdnFullLog_yhprd_edgeLog_respTime%7BdomainName%3D%7E%22order.suning.com%22%7D%29%29&start={}&end={}&step=60",
+							"protocol": "http",
+							"host": [
+								"log",
+								"data",
+								"cloudytrace",
+								"com"
+							],
+							"port": "8481",
+							"path": [
+								"select",
+								"3",
+								"prometheus",
+								"api",
+								"v1",
+								"query_range"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "sum%28count_over_time%28cdnp_cdnFullLog_yhprd_edgeLog_respTime%7BdomainName%3D%7E%22order.suning.com%22%7D%29%29"
+								},
+								{
+									"key": "start",
+									"value": "{}"
+								},
+								{
+									"key": "end",
+									"value": "{}"
+								},
+								{
+									"key": "step",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MySQL",
+			"item": [
+				{
+					"name": "query(DEV)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "update t_alert_model_deploy set update_time=now() where model_id = 2019110101;\nupdate t_alert_model_deploy set deploy_time = now();",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiasdev.cnsuning.com:8080//ctmdias-web/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"ctmdiasdev",
+								"cnsuning",
+								"com"
+							],
+							"port": "8080",
+							"path": [
+								"",
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "query(SIT)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "select * from `t_intel_alert_monitor_obj` where id = 122",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiassit.cloudytrace.com/ctmdias-web/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"ctmdiassit",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "query(PRE)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "SELECT\n\ta.ename,\n\ta. NAME,\n\tb.id,\n\tb.cname\nFROM\n\tt_intel_alert_monitor_obj a\nINNER JOIN t_intel_alert_metric b ON a.id = b.monitor_obj_id\nORDER BY\n\ta.id,\n\tb.id",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdiasxgpre.cloudytrace.com/ctmdias-web/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"ctmdiasxgpre",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "query(PRD)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "key",
+									"value": "h7f32H8p4CV10JM831h92bgv1g73fg87a92w",
+									"type": "text"
+								},
+								{
+									"key": "sql",
+									"value": "select * from t_alert_intel_topic",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://ctmdias.cloudytrace.com/ctmdias-web/api/intel-alerts/sql/",
+							"protocol": "http",
+							"host": [
+								"ctmdias",
+								"cloudytrace",
+								"com"
+							],
+							"path": [
+								"ctmdias-web",
+								"api",
+								"intel-alerts",
+								"sql",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1.1.7.3",
+			"item": [
+				{
+					"name": "yarn_apps_sit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.47.189.245:8088/ws/v1/cluster/apps?states=RUNNING",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"189",
+								"245"
+							],
+							"port": "8088",
+							"path": [
+								"ws",
+								"v1",
+								"cluster",
+								"apps"
+							],
+							"query": [
+								{
+									"key": "states",
+									"value": "RUNNING"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "yarn_apps_prd",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.138.200:9900/ws/v1/cluster/apps?states=RUNNING",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"138",
+								"200"
+							],
+							"port": "9900",
+							"path": [
+								"ws",
+								"v1",
+								"cluster",
+								"apps"
+							],
+							"query": [
+								{
+									"key": "states",
+									"value": "RUNNING"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ch_proxy_sit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "select 1"
+						},
+						"url": {
+							"raw": "http://10.47.206.35:10090/?user=insert",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"206",
+								"35"
+							],
+							"port": "10090",
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "insert"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ch_sit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "select 1"
+						},
+						"url": {
+							"raw": "http://10.47.206.36:8123",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"206",
+								"36"
+							],
+							"port": "8123"
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ch_proxy_prd",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "select * from alert.alert_trace_join_bak_all where interceptTime>='2021-01-19 09:30:00' and interceptTime<'2021-01-19 09:30:15' format Values",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.209.51:10090/?user=alert_query",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"209",
+								"51"
+							],
+							"port": "10090",
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "alert_query"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-SIT查询POST_sql",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    //\"sql\": \"select alert_time from ctmdias_event_info_202012 where alert_time >= 1607270400000 and alert_time <= 1607356799000\"\n    //\"sql\": \"select alert_time,metric_ename,metric_cname,monitor_obj,monitor_obj_cname from ctmdias_event_info_202012 where alert_time between 1607270400000 and 1607356799000\"\n    \"sql\": \"select alert_time,metric_ename,metric_cname,monitor_obj,monitor_obj_cname,isSent,filteredCause from ctmdias_event_info_202102 where alert_time between 1613955600000 and 1613959200000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.159.105:9200/_sql?format=csv",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"105"
+							],
+							"port": "9200",
+							"path": [
+								"_sql"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ES-PRD查询POST_sql",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   //\"query\": \"select lineID,event_id,serialcode,monitor_obj,monitor_obj_cname,metric_ename,metric_cname,stat_cycle,severity,alert_time,start_time,end_time,event_status,send_time,confidence,isMark,isAlert,markPeople from ctmdias_event_info_202011 where alert_time between 1606665600000 and 1606748400000\"\n   \"query\": \"select alert_time,metric_ename,metric_cname,monitor_obj,monitor_obj_cname,isSent,filteredCause from ctmdias_event_info_202102 where alert_time between 1613995200000 and 1614009600000 order by alert_time desc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=txt",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"_sql"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "txt"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "es",
+			"item": [
+				{
+					"name": "check",
+					"item": [
+						{
+							"name": "health",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_cat/_health",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_cat",
+										"_health"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "indices",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_cat/indices",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_cat",
+										"indices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "shards",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_cat/shards",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_cat",
+										"shards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "nodes_stats",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_nodes/stats?pretty",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_nodes",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "pretty",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set-index-settings",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"index\": {\r\n        \"number_of_replicas\": \"0\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.47.159.105:9200/ctmdias_deepar_alert*/_settings",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"ctmdias_deepar_alert*",
+										"_settings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-index-settings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/ctmdias_deepar*/_settings",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"ctmdias_deepar*",
+										"_settings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-index-fielddata",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/ctmdias_event_info_202011*/_stats/fielddata?fields=*",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"ctmdias_event_info_202011*",
+										"_stats",
+										"fielddata"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "*"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-cluster-settings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_cluster/_settings",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_cluster",
+										"_settings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cat",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.105:9200/_cat/indices",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"105"
+									],
+									"port": "9200",
+									"path": [
+										"_cat",
+										"indices"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "alertReport",
+					"item": [
+						{
+							"name": "ES-PRD查询-场景告警量统计",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    //\"query\": \"select monitor_obj,monitor_obj_cname,HISTOGRAM(cast(alert_time as timestamp) + INTERVAL 8 hour, INTERVAL 1 day)AS day,count(1) cnt from ctmdias_event_info_202010 where event_status=1 and alert_time between 1602432000000 and 1603036799000 group by day,monitor_obj,monitor_obj_cname order by monitor_obj,day\"\n    \"query\": \"select monitor_obj,monitor_obj_cname,HISTOGRAM(cast(alert_time as DATETIME) + INTERVAL 8 hour, INTERVAL 1 day)AS day,count(1) cnt from ctmdias_event_info_202010 where event_status=1 and isSent=1 and alert_time between 1602259200000 and 1604160000000 group by day,monitor_obj,monitor_obj_cname order by monitor_obj,day\"\n    //\"query\": \"select monitor_obj,monitor_obj_cname,count(1)/7 cnt from ctmdias_event_info_202010 where event_status=1 and alert_time between 1602432000000 and 1603036800000 group by monitor_obj,monitor_obj_cname order by monitor_obj\"\n    //\"query\": \"select monitor_obj,monitor_obj_cname,count(1)/4 cnt from ctmdias_event_info_202010 where event_status=1 and isSent=1 and alert_time between 1603296000000 and 1603641540000 group by monitor_obj,monitor_obj_cname order by monitor_obj\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询-异常毛刺点统计",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    \"query\": \"select monitor_obj,rValue,valueTime,upCriticalValue,downCriticalValue,health,duration from ctmdias_deepar_alert_20201102 where health='CRITICAL' and valueTime between 1604313000000 and 1604320200000\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "duration",
+					"item": [
+						{
+							"name": "ES-PRD查询DeepAR",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"health\": {\n                            \"value\": \"CRITICAL\"\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"alertType\": {\n                            \"value\": \"2\"\n                        }\n                    }\n                }\n            ]\n        }\n    },\n    \"_source\": {\n        \"includes\": [\n            \"monitor_obj\",\n            \"metric_ename\",\n            \"valueTime\"\n        ],\n        \"excludes\": []\n    }\n    // ,\n    // \"sort\": [\n    //     {\n    //         \"valueTime\": {\n    //             \"order\": \"asc\"\n    //         }\n    //     }\n    // ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_20200927/_search",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"ctmdias_deepar_alert_20200927",
+										"_search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询DeepAR SQL",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    \"query\": \"select monitor_obj,metric_ename,count(1) cnt from ctmdias_deepar_alert_20200928 where health = 'CRITICAL' group by monitor_obj,metric_ename\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询DeepAR SQL Copy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    \"query\": \"select valueTime,monitor_obj,metric_ename from ctmdias_deepar_alert_20201010 where health = 'CRITICAL' and metric_ename = 203\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询Event SQL",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    \"query\": \"select monitor_obj,metric_ename,monitor_obj_cname,metric_cname,count(1) cnt from ctmdias_event_info_202009 where event_status=1 and alert_time between 1601222400000 and 1601308799000 group by monitor_obj,monitor_obj_cname,metric_ename,metric_cname order by monitor_obj,metric_ename asc\"\n    //\"query\": \"select monitor_obj,metric_ename,monitor_obj_cname,metric_cname,column_name_list.dim_list.dim_name,column_name_list.dim_list.dim_cname,column_name_list.dim_list.column_name,column_name_list.score from ctmdias_event_info_202008 where column_name_list.dim_list.dim_name is null and column_name_list.score is not null\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询Event SQL Copy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=UTF-8"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fetch_size\": 5000,\n    \"query\": \"select monitor_obj,metric_ename,monitor_obj_cname,metric_cname,alert_time,send_time,start_time,end_time from ctmdias_event_info_202010 where event_status=1 and alert_time between 1603036800000 and 1603123140000 order by monitor_obj,metric_ename\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "alertPoint",
+					"item": [
+						{
+							"name": "ES-PRD查询",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"from\": 0,\n    \"size\": 5000,\n    \"query\": {\n        \"bool\": {\n            \"must\": [\n                {\n                    \"term\": {\n                        \"metric_ename\": {\n                            \"value\": 1698\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"isSent\": {\n                            \"value\": 1\n                        }\n                    }\n                },\n                {\n                    \"range\": {\n                        \"alert_time\": {\n                            \"from\": 1606752000000,\n                            \"to\": 1607616000000\n                        }\n                    }\n                }\n            ]\n        }\n    },\n    \"_source\": {\n        \"includes\": [\n            \"alert_time\",\n            \"metric_ename\",\n            \"metric_cname\",\n            \"monitor_obj\",\n            \"monitor_obj_cname\"\n        ],\n        \"excludes\": []\n    },\n    \"sort\": [\n        {\n            \"alert_time\": {\n                \"order\": \"desc\"\n            }\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_event_info_202012/_search",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"ctmdias_event_info_202012",
+										"_search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ES-PRD查询POST_sql",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    //\"query\": \"select alert_time,metric_ename,metric_cname,monitor_obj,monitor_obj_cname,isAlert,concat(markPeople,'a') markPeople,duration from ctmdias_event_info_202012 where monitor_obj = 167 and alert_time between 1606147200000 and 1607356799000 and isSent = 1 order by alert_time desc\"\n    \"query\": \"select alert_time,metric_ename,metric_cname,monitor_obj,monitor_obj_cname,isAlert,concat(markPeople,'a') markPeople,duration from ctmdias_event_info_202012 where isMark = 0\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_sql?format=csv",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_sql"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "csv"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "template",
+					"item": [
+						{
+							"name": "get template",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_template/aiops-tpl",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_template",
+										"aiops-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get template sit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "10.47.159.104:9200/_template/dsa-tpl",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"104"
+									],
+									"port": "9200",
+									"path": [
+										"_template",
+										"dsa-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "change template",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order\": 1,\r\n    \"index_patterns\": [\r\n        \"aiops_prediction_online_*\"\r\n    ],\r\n    \"settings\": {\r\n        \"index\": {\r\n            \"lifecycle\": {\r\n                \"name\": \"ctmdias_policy\"\r\n            }\r\n        }\r\n    },\r\n    \"mappings\": {},\r\n    \"aliases\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_template/dsa-tpl",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_template",
+										"dsa-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "change template sit",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order\": 2,\r\n    \"index_patterns\": [\r\n        \"ctmdias_*\"\r\n    ],\r\n    \"settings\": {\r\n        \"index\": {\r\n            \"max_result_window\": \"5000\",\r\n            \"codec\": \"best_compression\",\r\n            \"mapping\": {\r\n                \"coerce\": \"false\"\r\n            },\r\n            \"refresh_interval\": \"30s\",\r\n            \"number_of_shards\": \"2\",\r\n            \"number_of_replicas\": \"1\"\r\n        }\r\n    },\r\n    \"mappings\": {\r\n        \"dynamic_templates\": [\r\n            {\r\n                \"time_template\": {\r\n                    \"mapping\": {\r\n                        \"format\": \"yyyy-MM-dd'T'HH:mm:ss.SSS Z\",\r\n                        \"ignore_malformed\": true,\r\n                        \"type\": \"date\"\r\n                    },\r\n                    \"match_mapping_type\": \"date\"\r\n                }\r\n            },\r\n            {\r\n                \"string_template\": {\r\n                    \"mapping\": {\r\n                        \"norms\": false,\r\n                        \"ignore_above\": 5000,\r\n                        \"ignore_malformed\": true,\r\n                        \"type\": \"keyword\"\r\n                    },\r\n                    \"match_mapping_type\": \"string\"\r\n                }\r\n            },\r\n            {\r\n                \"long_template\": {\r\n                    \"mapping\": {\r\n                        \"ignore_malformed\": true\r\n                    },\r\n                    \"match_mapping_type\": \"long\"\r\n                }\r\n            },\r\n            {\r\n                \"double_template\": {\r\n                    \"mapping\": {\r\n                        \"ignore_malformed\": true\r\n                    },\r\n                    \"match_mapping_type\": \"double\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"aliases\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.47.159.104:9200/_template/dsa-tpl",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"104"
+									],
+									"port": "9200",
+									"path": [
+										"_template",
+										"dsa-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "template-aiops-tpl",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order\": 1,\r\n    \"index_patterns\": [\r\n        \"aiops_prediction_online_*\"\r\n    ],\r\n    \"settings\": {\r\n        \"index.lifecycle.name\": \"ctmdias_policy\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_template/aiops-tpl",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_template",
+										"aiops-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "template-deepar-tpl",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order\": 2,\r\n    \"index_patterns\": [\r\n        \"ctmdias_deepar_alert_*\"\r\n    ],\r\n    \"settings\": {\r\n        \"index.lifecycle.name\": \"ctmdias_policy\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_template/deepar-tpl",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_template",
+										"deepar-tpl"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "template-event-tpl",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order\": 2,\r\n    \"index_patterns\": [\r\n        \"ctmdias_event_info_*\"\r\n    ],\r\n    \"settings\": {\r\n        \"index.lifecycle.name\": \"event_policy\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_template/event-tpl",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_template",
+										"event-tpl"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "scale",
+					"item": [
+						{
+							"name": "shrinking",
+							"item": [
+								{
+									"name": "pre shrinking index",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"settings\": {\r\n        \"index.routing.allocation.require._name\": \"ctmdiasprd-d1-10.93.0.101\",\r\n        \"index.blocks.write\": true\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_20211105/_settings",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"ctmdias_deepar_alert_20211105",
+												"_settings"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "shrinking index",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"settings\": {\r\n        \"index.routing.allocation.require._name\": null,\r\n        \"index.blocks.write\": true,\r\n        \"index.number_of_replicas\": 0,\r\n        \"index.number_of_shards\": 1,\r\n        \"index.codec\": \"best_compression\"\r\n    },\r\n    \"aliases\": {\r\n        \"my_search_indices\": {}\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_20211105/_shrink/ctmdias_deepar_alert_20211105_t",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"ctmdias_deepar_alert_20211105",
+												"_shrink",
+												"ctmdias_deepar_alert_20211105_t"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "split",
+							"item": [
+								{
+									"name": "pre split",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"settings\": {\r\n        \"index.blocks.write\": true\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/ctmdias_event_info_202103_t/_settings",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"ctmdias_event_info_202103_t",
+												"_settings"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "split",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"settings\": {\r\n        \"index.number_of_shards\": 2,\r\n        \"index.routing.allocation.require._name\": null,\r\n        \"index.blocks.write\": null\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_20211105_t/_split/ctmdias_deepar_alert_20211105",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"ctmdias_deepar_alert_20211105_t",
+												"_split",
+												"ctmdias_deepar_alert_20211105"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "_cat",
+							"item": [
+								{
+									"name": "recovery",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/_cat/recovery/ctmdias_event_info_*?v",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"_cat",
+												"recovery",
+												"ctmdias_event_info_*"
+											],
+											"query": [
+												{
+													"key": "v",
+													"value": null
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "shards",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "10.104.238.10/ctmdiasprd/_cat/shards/ctmdias_event_info_202101*?v",
+											"host": [
+												"10",
+												"104",
+												"238",
+												"10"
+											],
+											"path": [
+												"ctmdiasprd",
+												"_cat",
+												"shards",
+												"ctmdias_event_info_202101*"
+											],
+											"query": [
+												{
+													"key": "v",
+													"value": null
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "voting",
+					"item": [
+						{
+							"name": "voting_exclusion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://10.47.159.104:9200/_cluster/voting_config_exclusions/ctmdias-sit-m3-10.47.159.106",
+									"protocol": "http",
+									"host": [
+										"10",
+										"47",
+										"159",
+										"104"
+									],
+									"port": "9200",
+									"path": [
+										"_cluster",
+										"voting_config_exclusions",
+										"ctmdias-sit-m3-10.47.159.106"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete voting_exclusion",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.237.184.108:9200/_cluster/voting_config_exclusions",
+									"protocol": "http",
+									"host": [
+										"10",
+										"237",
+										"184",
+										"108"
+									],
+									"port": "9200",
+									"path": [
+										"_cluster",
+										"voting_config_exclusions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ilm",
+					"item": [
+						{
+							"name": "ilm",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"policy\": {\r\n        \"phases\": {\r\n            \"delete\": {\r\n                \"min_age\": \"180d\",\r\n                \"actions\": {\r\n                    \"delete\": {}\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_ilm/policy/event_policy",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_ilm",
+										"policy",
+										"event_policy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get ilm",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_ilm/policy/event_policy",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_ilm",
+										"policy",
+										"event_policy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get ilm Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "10.104.238.10/ctmdiasprd/_ilm/policy/event_policy",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_ilm",
+										"policy",
+										"event_policy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ilm status",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/_ilm/status",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"_ilm",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "index ilm",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"index.lifecycle.name\": \"ctmdias_policy\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_*/_settings",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"ctmdias_deepar_alert_*",
+										"_settings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "index ilm explain",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_event_info_202112/_ilm/explain",
+									"protocol": "http",
+									"host": [
+										"10",
+										"104",
+										"238",
+										"10"
+									],
+									"path": [
+										"ctmdiasprd",
+										"ctmdias_event_info_202112",
+										"_ilm",
+										"explain"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "analyze",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"analyzer\": \"ik_max_word\",\r\n    \"explain\": true,\r\n    \"text\": \"床前明月光\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.47.159.104:9200/_analyze",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"104"
+							],
+							"port": "9200",
+							"path": [
+								"_analyze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "allocation.exclude._ip",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transient\": {\r\n        \"cluster.routing.allocation.exclude._ip\": \"10.47.159.118,10.47.159.119\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://10.237.184.108:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"10",
+								"237",
+								"184",
+								"108"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "settings",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"settings\": {\r\n        \"index.routing.allocation.require._name\": null,\r\n        \"index.blocks.write\": null\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "10.104.238.10/ctmdiasprd/ctmdias_event_info_202108/_settings",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"ctmdias_event_info_202108",
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete indics",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://10.104.238.10/ctmdiasprd/ctmdias_deepar_alert_202111*",
+							"protocol": "http",
+							"host": [
+								"10",
+								"104",
+								"238",
+								"10"
+							],
+							"path": [
+								"ctmdiasprd",
+								"ctmdias_deepar_alert_202111*"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete indics sit",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://10.237.184.108:9200/ctmdias_deepar_alert_202204*",
+							"protocol": "http",
+							"host": [
+								"10",
+								"237",
+								"184",
+								"108"
+							],
+							"port": "9200",
+							"path": [
+								"ctmdias_deepar_alert_202204*"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/_cat/indcs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://10.47.159.104:9200/_cat/indices",
+							"protocol": "http",
+							"host": [
+								"10",
+								"47",
+								"159",
+								"104"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"indices"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
