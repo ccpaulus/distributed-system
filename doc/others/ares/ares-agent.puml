@@ -1,0 +1,249 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+!pragma useIntermediatePackages false
+
+ 依赖 ..> 被依赖 : 使用关系
+ 关联 --> 被关联 : 结构关系(被关联类以属性形式存在于关联类中)
+ 聚合 --o 整体 : 整体不存在，部分可存在
+ 组合 --* 整体 : 整体不存在，部分也不存在
+ 继承 --|> 被继承
+ 实现 ..|> 被实现
+
+package com.suning.monitor.ares.agent.main {
+
+    AgentJarResolver <.. Agent::agentInstrumentation
+
+    class AgentJarResolver {
+        + {static} boolean loadBootstrapJarFile(Instrumentation,String)
+        + {static} URL[] loadBootstrapJarFiles(Instrumentation,String)
+        + {static} URL[] loadSystemClassloaderJarFiles(Instrumentation,String)
+        + {static} URL[] loadAgentJarFile(String)
+        + {static} List<File> getAgentJars(String)
+        - {static} List<File> loadJarFiles(File,String)
+        - {static} List<File> listJarFiles(File)
+        + {static} File findJarFolder()
+        + {static} File findJar()
+        + {static} boolean loadBootstrapToolsJarFile(Instrumentation)
+        - {static} File searchToolsJarFile()
+    }
+
+    class Agent {
+        - {static} String agentClassLoaderPath
+        - {static} String aresAgentClassName
+        + {static} void premain(String,Instrumentation)
+        + {static} void agentmain(String,Instrumentation)
+        + {static} void agentInstrumentation(String,Instrumentation,boolean)
+        - {static} void loadJbossModules()
+        - {static} ClassLoader createAgentClassLoader(URL[],URL[])
+        - {static} ClassLoader getPlatformClassLoader()
+    }
+
+    note right of Agent::premain
+          javaagent 入口方法
+        end note
+
+}
+
+
+package com.suning.monitor.ares.agent.bootstrap {
+
+    AgentClassLoader +.. AgentClassLoader$BootstrapClassLoader
+
+    class AgentClassLoader {
+        - BootstrapClassLoader bootstrapClassLoader
+        + URL getResource(String)
+        + BootstrapClassLoader getAgentBootstrapClassLoader()
+    }
+
+    class AgentClassLoader$BootstrapClassLoader {
+        + void addURL(URL)
+        # Class<?> findClass(String)
+    }
+
+}
+
+package com.suning.monitor.ares.agent.core {
+
+    class AresAgent {
+        - {static} Instrumentation instrumentation
+        - {static} ClassLoader agentClassLoader
+        - {static} String traceType
+        + {static} void start(ClassLoader,Instrumentation)
+        + {static} boolean initAgent()
+        + {static} Instrumentation getInstrumentation()
+        + {static} ClassLoader getAgentClassLoader()
+        + {static} AgentClassLoader.BootstrapClassLoader getBootstrapClassLoader()
+        + {static} String findRootDir()
+    }
+
+    class transform.AgentTransform {
+        - {static} ResettableClassFileTransformer resetTransform
+        + {static} ResettableClassFileTransformer installAgent()
+        + {static} void installDynamicTransformAgent()
+        + {static} void resetTransform()
+        - {static} ResettableClassFileTransformer dynamicTransform(Instrumentation)
+        + {static} void setResetTransform(ResettableClassFileTransformer)
+        - {static} AgentBuilder createAgentBuilder()
+    }
+
+    note right of transform.AgentTransform::installAgent
+      修改插件方法字节码生效
+    end note
+
+    note right of transform.AgentTransform::createAgentBuilder
+      1、使用 AgentBuilder
+            该接口用于 ByteBuddy 对接 javaagent
+      2、通过 installOn(instrumentation) 方法安装 Transformer
+            instrumentation 为 javaagent premain 方法的入参
+      3、Ares 字节码增强使用的策略：
+            RedefinitionStrategy.RETRANSFORMATION
+            TypeStrategy.Default.REDEFINE
+            InitializationStrategy.NoOp.INSTANCE
+    end note
+
+    interface plugin.IPlugin {
+        ~ AgentBuilder instrument(AgentBuilder)
+        ~ ItemType itemType()
+    }
+
+    abstract plugin.AbstractPlugin {
+        + AgentBuilder instrument(AgentBuilder)
+        - AgentBuilder.Identified.Extendable loadCustomClasses(AgentBuilder.Identified.Extendable)
+        + String[] customClassNames()
+        + {abstract}ItemType itemType()
+        + {abstract}ElementMatcher<? super TypeDescription> classMatcher()
+        + ElementMatcher<ClassLoader> classLoaderMatcher()
+        + {abstract}PluginBuilder methodMatcher()
+        - AgentBuilder.Identified.Extendable applyInstrumentationTransformers(AgentBuilder.Identified.Extendable)
+        # ReferenceMatcher getInstrumentationMuzzle()
+    }
+
+    note right of plugin.AbstractPlugin::instrument
+          1、类型限定
+                限定 class 的类型，使用每个具体 plugin 中的实现
+                限定 classloader 为 any
+          2、设置 Transformer
+                AresTransformers.CONSTANT_ADJUSTER
+          3、将自定义的 class 注入到用户的 classloader
+                每个具体 plugin 中的使用全类名指定
+          4、添加对限定方法的拦截
+                每个具体 plugin 中指定相应的 ElementMatcher 和 Advice
+                ElementMatcher 进行方法匹配
+                Advice 提供拦截处理
+        end note
+
+    class common.AresTransformers {
+        - {static} AgentBuilder.Transformer CONSTANT_ADJUSTER
+        + {static} AgentBuilder.Transformer defaultTransformers()
+    }
+
+    class common.CustomClassInjector {
+        - Set<String> customClassNames
+        - Map<TypeDescription,byte[]> customClassMap
+        - Set<ClassLoader> injectedClassLoaders
+        - Map<TypeDescription,byte[]> getCustomClassMap()
+        + DynamicType.Builder<?> transform(DynamicType.Builder<?>,TypeDescription,ClassLoader,JavaModule)
+    }
+
+    AresAgent::start ..> transform.AgentTransform
+    transform.AgentTransform::installAgent ..> plugin.AbstractPlugin::instrument
+    plugin.IPlugin <|.. plugin.AbstractPlugin
+    plugin.AbstractPlugin::instrument ..> common.AresTransformers
+    plugin.AbstractPlugin::loadCustomClasses ..> common.CustomClassInjector
+
+}
+
+package com.suning.monitor.ares.agent.plugin {
+
+    class advice.JedisAdvice {
+        + {static} Span startSpan(Object[],String)
+        + {static} void stopSpan(Span,Object[],String,Object,Throwable)
+    }
+
+    class JedisPlugin {
+        + ElementMatcher<? super TypeDescription> classMatcher()
+        + PluginBuilder methodMatcher()
+        + String[] customClassNames()
+        + ItemType itemType()
+    }
+
+    class common.JedisHelper {
+        + {static} Span startSpan(Object[],String)
+        + {static} void stopSpan(Span,Object[],String,Object,Throwable)
+        - {static} String convertArray2String(String[])
+        - {static} boolean isAvailableArray(Object[])
+    }
+
+    com.suning.monitor.ares.agent.core.plugin.AbstractPlugin <|-- JedisPlugin
+    JedisPlugin::methodMatcher ..> advice.JedisAdvice
+    JedisPlugin::customClassNames ..> common.JedisHelper
+
+}
+
+
+
+
+
+
+
+interface com.suning.monitor.ares.agent.core.service.IService {
++ void start()
++ void stop()
+}
+
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher {
++ {static} ClassLoader BOOTSTRAP_CLASSLOADER
++ {static} ElementMatcher.Junction.AbstractBase<ClassLoader> skipClassLoader()
++ {static} ElementMatcher.Junction.AbstractBase<ClassLoader> classLoaderHasClasses(String)
++ {static} ElementMatcher.Junction.AbstractBase<ClassLoader> classLoaderHasClassWithField(String,String)
++ {static} ElementMatcher.Junction.AbstractBase<ClassLoader> classLoaderHasClassWithMethod(String,String,String)
+}
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$SkipClassLoaderMatcher {
++ {static} SkipClassLoaderMatcher INSTANCE
+- {static} WeakMap<ClassLoader,Boolean> SKIP_CACHE
+- {static} Set<String> CLASSLOADER_CLASSES_TO_SKIP
++ boolean matches(ClassLoader)
+- boolean shouldSkipClass(ClassLoader)
+- boolean shouldSkipInstance(ClassLoader)
+- boolean delegatesToBootstrap(ClassLoader)
+- boolean loadsExpectedClass(ClassLoader,Class<?>)
+}
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderNameMatcher {
+- String name
++ boolean matches(ClassLoader)
+}
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassMatcher {
+- WeakConcurrentMap<ClassLoader,Boolean> cache
+- String[] resources
+- boolean hasResources(ClassLoader)
++ boolean matches(ClassLoader)
+}
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithFieldMatcher {
+- WeakMap<ClassLoader,Boolean> cache
+- String className
+- String fieldName
++ boolean matches(ClassLoader)
+}
+class com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithMethodMatcher {
+- WeakMap<ClassLoader,Boolean> cache
+- String className
+- String methodName
+- String[] methodArgs
++ boolean matches(ClassLoader)
+}
+
+
+
+com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher +.. com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$SkipClassLoaderMatcher
+com.suning.monitor.ares.agent.core.classloader.AbstractBase <|-- com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$SkipClassLoaderMatcher
+com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher +.. com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderNameMatcher
+com.suning.monitor.ares.agent.core.classloader.AbstractBase <|-- com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderNameMatcher
+com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher +.. com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassMatcher
+com.suning.monitor.ares.agent.core.classloader.AbstractBase <|-- com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassMatcher
+com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher +.. com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithFieldMatcher
+com.suning.monitor.ares.agent.core.classloader.AbstractBase <|-- com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithFieldMatcher
+com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher +.. com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithMethodMatcher
+com.suning.monitor.ares.agent.core.classloader.AbstractBase <|-- com.suning.monitor.ares.agent.core.classloader.ClassLoaderMatcher$ClassLoaderHasClassWithMethodMatcher
+
+@enduml
